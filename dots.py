@@ -11,8 +11,13 @@ class Dot(GameObject):
         Dot.dotImage = pygame.transform.rotate(pygame.transform.scale(
             pygame.image.load('images/cow.jpeg').convert_alpha(),
             (60, 100)), 0)
-    def __init__(self, PID, x, y):
-        super(Dot, self).__init__(x, y, Dot.dotImage, 30)
+        Dot.squidImage=pygame.transform.rotate(pygame.transform.scale(
+            pygame.image.load('images/squid.png').convert_alpha(),
+            (60, 100)), 0)
+    def __init__(self, PID, x, y,isMe):
+        if isMe: super(Dot, self).__init__(x, y, Dot.dotImage, 30)
+        else: super(Dot, self).__init__(x, y, Dot.squidImage, 30)
+        self.isMe=isMe
         self.PID = PID
         self.x = x
         self.y = y
@@ -36,8 +41,8 @@ class Dot(GameObject):
         canvas.create_oval(self.x-r, self.y-r, 
                            self.x+r, self.y+r, fill=color)
         canvas.create_text(self.x, self.y, text=self.PID, fill="white")
-    def update(self, dt, keysDown, screenWidth, screenHeight,server,isMe):
-        if isMe==True: #dont' want to move other people's dots 
+    def update(self, dt, keysDown, screenWidth, screenHeight,server):
+        if self.isMe==True: #dont' want to move other people's dots 
             msg=''
             if keysDown(pygame.K_LEFT):
                 self.move(-self.dx,0)

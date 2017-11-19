@@ -43,11 +43,10 @@ class Game(PygameGame): #mimics game.py
   def init(self):
     self.bgColor=(102,255,255)
     Dot.init()
-    self.me= Dot("lonely",self.width/2,self.height/2)
+    self.me= Dot("lonely",self.width/2,self.height/2,True) #last parameter says it's me 
     self.otherStrangers=dict()
-    self.myDotGroup=pygame.sprite.Group()
-    self.myDotGroup.add(self.me)
-    self.otherDotGroup=pygame.sprite.Group()
+    self.dotGroup=pygame.sprite.Group()
+    self.dotGroup.add(self.me)
   
   def keyPressed(self,code,mod):
     msg="" 
@@ -76,8 +75,7 @@ class Game(PygameGame): #mimics game.py
       print ("sending: ", msg,)
       self.server.send(msg.encode())
   def timerFired(self,dt):
-    self.myDotGroup.update(dt,self.isKeyPressed,self.width,self.height,self.server,True) #isMe is True 
-    self.otherDotGroup.update(dt,self.isKeyPressed,self.width,self.height,self.server,False)
+    self.dotGroup.update(dt,self.isKeyPressed,self.width,self.height,self.server)
     while (serverMsg.qsize() > 0):
       msg = serverMsg.get(False)
       try:
@@ -89,11 +87,13 @@ class Game(PygameGame): #mimics game.py
           myPID = msg[1]
           self.me.changePID(myPID)
         elif (command == "newPlayer"):
+          print("now in the new player case")
           newPID = msg[1]
           x = self.width/2
           y = self.height/2
-          self.otherStrangers[newPID] = Dot(newPID, x, y)
-          self.otherDotGroup.add(self.otherStrangers[newPID])
+          self.otherStrangers[newPID] = Dot(newPID, x, y,False)
+          self.dotGroup.add(self.otherStrangers[newPID])
+          print("added to dotGroup")
 
         elif (command == "playerMoved"):
           PID = msg[1]
@@ -111,8 +111,8 @@ class Game(PygameGame): #mimics game.py
       serverMsg.task_done()
   def redrawAll(self,screen):
       #draw everything as same color? 
-      self.myDotGroup.draw(screen)
-      self.otherDotGroup.draw(screen)
+      self.dotGroup.draw(screen)
+
 
 ##NOT TKINTER STUFF 
 serverMsg = Queue(100)
