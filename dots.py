@@ -5,6 +5,7 @@
 import pygame
 import math
 from GameObject import GameObject
+import random 
 class Dot(GameObject):
     @staticmethod
     def init():
@@ -56,6 +57,15 @@ class Dot(GameObject):
             if keysDown(pygame.K_DOWN):
                 self.move(0,self.dy) 
                 msg="playerMoved 0 %d\n" %(self.dy)
+            '''elif keysDown(pygame.K_SPACE):
+                x = random.randint(0, self.width)
+                y = random.randint(0, self.height)
+                # teleport myself
+                self.teleport(x, y)
+                # update the message
+                msg = "playerTeleported %d %d\n" % (x, y)'''
+                #don't actually want the user to hold down the space bar 
+
             if (msg != ""):
                 print ("sending from dots file: ", msg,)
                 server.send(msg.encode())

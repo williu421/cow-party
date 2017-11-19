@@ -6,9 +6,9 @@
 
 import socket
 import threading
-from queue import Queue
+from queue import Queue #should be 'from Queue import Queue if python2.x 
 
-HOST = "128.237.198.124" # put your IP address here if playing on multiple computers
+HOST = "128.237.112.84" # put your IP address here if playing on multiple computers
 PORT = 50009
 #need to make sure host, port match the server 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -50,7 +50,7 @@ class Game(PygameGame): #mimics game.py
   
   def keyPressed(self,code,mod):
     msg="" 
-    if code == pygame.K_DOWN:
+    '''if code == pygame.K_DOWN:
       self.me.move(0,self.me.dy)
       msg="playerMoved 0 %d\n" %(self.me.dy)
     elif code == pygame.K_UP:
@@ -61,8 +61,8 @@ class Game(PygameGame): #mimics game.py
       msg="playerMoved %d 0\n" %(self.me.dx)
     elif code == pygame.K_LEFT:
       self.me.move(-self.me.dx,0)
-      msg="playerMoved %d 0\n" %(-self.me.dx)
-    elif code == pygame.K_SPACE:
+      msg="playerMoved %d 0\n" %(-self.me.dx)'''
+    if code == pygame.K_SPACE:
       x = random.randint(0, self.width)
       y = random.randint(0, self.height)
       # teleport myself
