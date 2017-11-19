@@ -12,7 +12,7 @@ class Dot(GameObject):
             pygame.image.load('images/cow.jpeg').convert_alpha(),
             (60, 100)), 0)
         Dot.squidImage=pygame.transform.rotate(pygame.transform.scale(
-            pygame.image.load('images/squid.png').convert_alpha(),
+            pygame.image.load('images/Alpaca.png').convert_alpha(),
             (60, 100)), 0)
     def __init__(self, PID, x, y,isMe):
         if isMe: super(Dot, self).__init__(x, y, Dot.dotImage, 30)
