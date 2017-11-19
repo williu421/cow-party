@@ -17,6 +17,7 @@ class GameObject(pygame.sprite.Sprite):
         self.updateRect()
         self.velocity = (0, 0)
         self.angle = 0
+        
 
     def updateRect(self):
         # update the object's rect attribute with the new x,y coordinates

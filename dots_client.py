@@ -7,9 +7,12 @@
 import socket
 import threading
 from queue import Queue #should be 'from Queue import Queue if python2.x 
-
-HOST = "128.237.112.84" # put your IP address here if playing on multiple computers
+from processMessage import processMessage 
+import inputbox
+hostAddress=input("enter the host's IP address: \n")
+HOST = str(hostAddress) # put your IP address here if playing on multiple computers
 PORT = 50009
+BACKLOG=2
 #need to make sure host, port match the server 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -47,21 +50,13 @@ class Game(PygameGame): #mimics game.py
     self.otherStrangers=dict()
     self.dotGroup=pygame.sprite.Group()
     self.dotGroup.add(self.me)
-  
+    Game.startScreen=pygame.transform.scale(
+            pygame.image.load('images/startScreen.jpg').convert_alpha(),
+            (self.width, self.height))
+    self.lobbyMode=True 
+    self.namesDict=dict() #key is PID, value is the stringed name
   def keyPressed(self,code,mod):
     msg="" 
-    '''if code == pygame.K_DOWN:
-      self.me.move(0,self.me.dy)
-      msg="playerMoved 0 %d\n" %(self.me.dy)
-    elif code == pygame.K_UP:
-      self.me.move(0,-self.me.dy)
-      msg="playerMoved 0 %d\n" %(-self.me.dy)
-    elif code == pygame.K_RIGHT:
-      self.me.move(self.me.dx,0)
-      msg="playerMoved %d 0\n" %(self.me.dx)
-    elif code == pygame.K_LEFT:
-      self.me.move(-self.me.dx,0)
-      msg="playerMoved %d 0\n" %(-self.me.dx)'''
     if code == pygame.K_SPACE:
       x = random.randint(0, self.width)
       y = random.randint(0, self.height)
@@ -79,39 +74,14 @@ class Game(PygameGame): #mimics game.py
     while (serverMsg.qsize() > 0):
       msg = serverMsg.get(False)
       try:
-        print("received: ", msg, "\n")
-        msg = msg.split()
-        command = msg[0]
-
-        if (command == "myIDis"):
-          myPID = msg[1]
-          self.me.changePID(myPID)
-        elif (command == "newPlayer"):
-          print("now in the new player case")
-          newPID = msg[1]
-          x = self.width/2
-          y = self.height/2
-          self.otherStrangers[newPID] = Dot(newPID, x, y,False)
-          self.dotGroup.add(self.otherStrangers[newPID])
-          print("added to dotGroup")
-
-        elif (command == "playerMoved"):
-          PID = msg[1]
-          dx = int(msg[2])
-          dy = int(msg[3])
-          self.otherStrangers[PID].move(dx, dy)
-
-        elif (command == "playerTeleported"):
-          PID = msg[1]
-          x = int(msg[2])
-          y = int(msg[3])
-          self.otherStrangers[PID].teleport(x, y)
+        processMessage(self,msg,BACKLOG)
       except:
         print("failed")
       serverMsg.task_done()
   def redrawAll(self,screen):
       #draw everything as same color? 
       self.dotGroup.draw(screen)
+      if self.lobbyMode: screen.blit(Game.startScreen,(0,0))
 
 
 ##NOT TKINTER STUFF 
@@ -120,4 +90,4 @@ threading.Thread(target = handleServerMsg, args = (server, serverMsg)).start()
 
 #run(200, 200, serverMsg, server)
 
-Game(900,900,serverMsg,server).run()
+Game(1920//2,1200//2,serverMsg,server).run()

@@ -57,6 +57,8 @@ class PygameGame(object):
         self.fps = fps
         self.title = title
         self.bgColor = (0, 0, 0)
+        self.needUserInput=False 
+        self.standbyColor= (255,0,127)
         pygame.init()
 
     def run(self):
@@ -72,6 +74,9 @@ class PygameGame(object):
         # call game-specific initialization
         self.init()
         playing = True
+        while self.needUserInput: 
+            print('on pause')
+            screen.fill(self.standbyColor)
         while playing:
             time = clock.tick(self.fps)
             self.timerFired(time)
