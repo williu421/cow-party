@@ -42,6 +42,7 @@ from pygamegame import PygameGame
 from Square import Square 
 import random
 from Board import Board 
+from displayMessage import displayMessage
 pygame.font.init()
 ####################################
 # customize these functions
@@ -59,31 +60,36 @@ class Game(PygameGame): #mimics game.py
     Game.startScreen=pygame.transform.scale(
             pygame.image.load('images/startScreen.jpg').convert_alpha(),
             (self.width, self.height))
-    self.lobbyMode=True  
+    self.mode='LOBBY'  #LOBBY, PLAY, DISPLAYMESSAGE 
     self.namesDict=dict() #key is PID, value is the stringed name
     self.myfont=pygame.font.SysFont('Comic Sans MS', 40)
+    self.message = '' #for displayMessage 
   def keyPressed(self,code,mod):
-    if code == pygame.K_SEMICOLON:
-      pygame.quit()
-    msg="" 
-    if code == pygame.K_LEFT:
-        if self.me.move(-self.me.dx,0):
-            msg="playerMoved %d 0\n" %(-self.me.dx)
-    if code == pygame.K_RIGHT:
-        if self.me.move(self.me.dx,0):
-            msg="playerMoved %d 0\n" %(self.me.dx)
-    if code == pygame.K_UP:
-        if self.me.move(0,-self.me.dy):
-            msg="playerMoved 0 %d\n" %(-self.me.dy)
-    if code == pygame.K_DOWN:
-        if self.me.move(0,self.me.dy):
-            msg="playerMoved 0 %d\n" %(self.me.dy)
-    # send the message to other players!
-    if (msg != ""):
-      print ("sending: ", msg,)
-      self.server.send(msg.encode())
+    if self.mode == 'DISPLAYMODE':
+      if code == pygame.K_k:
+        self.mode = 'PLAY'
+    if self.mode == 'PLAY':
+      if code == pygame.K_0:
+        self.message = "press 'k' to continue"
+        self.mode='DISPLAYMESSAGE'
+      msg="" 
+      if code == pygame.K_LEFT:
+          if self.me.move(-self.me.dx,0):
+              msg="playerMoved %d 0\n" %(-self.me.dx)
+      if code == pygame.K_RIGHT:
+          if self.me.move(self.me.dx,0):
+              msg="playerMoved %d 0\n" %(self.me.dx)
+      if code == pygame.K_UP:
+          if self.me.move(0,-self.me.dy):
+              msg="playerMoved 0 %d\n" %(-self.me.dy)
+      if code == pygame.K_DOWN:
+          if self.me.move(0,self.me.dy):
+              msg="playerMoved 0 %d\n" %(self.me.dy)
+      # send the message to other players!
+      if (msg != ""):
+        print ("sending: ", msg,)
+        self.server.send(msg.encode())
   def timerFired(self,dt):
-    self.PieceGroup.update(dt,self.isKeyPressed,self.width,self.height,self.server)
     while (serverMsg.qsize() > 0):
       msg = serverMsg.get(False)
       try:
@@ -91,13 +97,15 @@ class Game(PygameGame): #mimics game.py
       except:
         print("failed")
       serverMsg.task_done()
+    self.PieceGroup.update(dt,self.isKeyPressed,self.width,self.height,self.server)
   def redrawAll(self,screen):
       #draw everything as same color? 
+      if self.mode == 'PLAY': 
       self.gameBoard.squareGroup.draw(screen)
       self.PieceGroup.draw(screen)
       for Piece in self.PieceGroup:
           Piece.drawName(self,screen)
-      if self.lobbyMode: 
+      if self.mode=='LOBBY': 
           screen.blit(Game.startScreen,(0,0))
           inc = 0
           for playerID in self.namesDict:
@@ -105,6 +113,8 @@ class Game(PygameGame): #mimics game.py
               %(playerID,self.namesDict[playerID]),False,(128,255,0))
               screen.blit(namesText,(self.width/10,self.height/10+inc))
               inc += self.width/5 
+      if self.mode == 'DISPLAYMESSAGE':
+        displayMessage(screen,self.width/2,self.height/2,self.message,self.width,self.height) 
 
 
 ##NOT TKINTER STUFF 

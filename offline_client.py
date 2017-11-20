@@ -7,6 +7,7 @@ from pygamegame import PygameGame
 from Square import Square 
 import random
 from Board import Board 
+from displayMessage import displayMessage
 pygame.font.init()
 ####################################
 # customize these functions
@@ -27,15 +28,23 @@ class Game(PygameGame): #mimics game.py
     self.lobbyMode=False 
     self.namesDict=dict() #key is PID, value is the stringed name
     self.myfont=pygame.font.SysFont('Comic Sans MS', 40)
+    self.mode = 'PLAY'
+    self.message=''
   def keyPressed(self,code,mod):
-    if code == pygame.K_SEMICOLON:
-      pygame.quit()
+    if self.mode == 'DISPLAYMESSAGE':
+        if code == pygame.K_k:
+            self.mode = 'PLAY'
+        return None #user can't do anything else in display mode 
+    if self.mode == 'PLAY':
+      if code == pygame.K_0:
+        self.message = "press 'k' to continue"
+        self.mode='DISPLAYMESSAGE'
     msg="" 
     if code == pygame.K_LEFT:
         if self.me.move(-self.me.dx,0):
             msg="playerMoved %d 0\n" %(-self.me.dx)
     if code == pygame.K_RIGHT:
-        if self.me.move(self.me.dx,0):
+        if self.me.move(self.me.dx,0,self):
             msg="playerMoved %d 0\n" %(self.me.dx)
     if code == pygame.K_UP:
         if self.me.move(0,-self.me.dy):
@@ -58,7 +67,6 @@ class Game(PygameGame): #mimics game.py
         self.gameBoard.squareGroup.draw(screen)
         self.PieceGroup.draw(screen)
         for Piece in self.namesDict.values():
-            print("starting drawName")
             Piece.drawName(self,screen)
         if self.lobbyMode: 
             screen.blit(Game.startScreen,(0,0))
@@ -68,8 +76,10 @@ class Game(PygameGame): #mimics game.py
                 %(playerID,self.namesDict[playerID]),False,(128,255,0))
                 screen.blit(namesText,(self.width/10,self.height/10+inc))
                 inc += self.width/5 
+        if self.mode == 'DISPLAYMESSAGE':
+            displayMessage(screen,self.width/2,self.height/2,self.message,self.width,self.height)
 
 
 
 
-Game(1920,1200).run()
+Game(1920*3//5,1200*3//5).run()

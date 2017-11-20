@@ -27,10 +27,13 @@ class Square(GameObject):
         self.xcoord=xcoord
         self.ycoord=ycoord 
         self.ordinal=ordinal 
-
+    def interact(self,piece):
+        pass
 class BlankSquare(Square): 
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,Square.blank)
-
+    def interact(self,piece,game):
+        game.message = '%s has hit a blankSquare!' %(piece.PID)
+        game.mode = 'DISPLAYMESSAGE'

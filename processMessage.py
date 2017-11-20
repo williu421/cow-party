@@ -45,7 +45,7 @@ def processMessage(self, msg,BACKLOG):
         self.otherStrangers[newPID] = Piece(newPID, x, y,False)
         self.PieceGroup.add(self.otherStrangers[newPID])
         if len(self.PieceGroup)==BACKLOG:
-            self.lobbyMode=False
+            self.mode = 'PLAY'
     elif (command == "playerMoved"):
         PID = msg[1]
         dx = int(msg[2])

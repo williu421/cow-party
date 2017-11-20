@@ -29,12 +29,13 @@ class Piece(GameObject):
         self.ygrid = ygrid
         self.dx,self.dy=1,1
         self.size = 30
-    def move(self, dx, dy):
+    def move(self, dx, dy,game):
         if (self.xgrid+dx >= Board.cols or self.xgrid+dx<0 or self.ygrid+dy<0 or \
         self.ygrid >= Board.rows):
             return False 
         self.xgrid += dx
         self.ygrid += dy
+        game.gameBoard.board[self.ygrid][self.xgrid].interact(self,game) #if special square
         self.x=Square.margin+(self.xgrid+1/2)*Square.cellWidth
         self.y=Square.margin+(self.ygrid+1/2)*Square.cellHeight
         return True 
