@@ -2,7 +2,7 @@ import socket
 import threading
 from queue import Queue #should be 'from Queue import Queue if python2.x 
 import pygame
-from dots import Dot
+from Pieces import Piece
 from pygamegame import PygameGame
 import random
 from inputbox import *
@@ -29,21 +29,22 @@ def processMessage(self, msg,BACKLOG):
         for playerPID in self.namesDict: 
             myMsg = 'nameVal %s %s\n'%(playerPID,self.namesDict[playerPID])
             print("sending: ", myMsg,)
-        self.server.send(myMsg.encode())
+            self.server.send(myMsg.encode())
     elif (command == "nameVal"): 
-        print(self.namesDict)
         self.namesDict[msg[2]]=self.namesDict.get(msg[2],'') 
         #in this case, the player hosting this hasn't  seen the others yet 
         if self.namesDict[msg[2]] != '' and self.namesDict[msg[2]]!=msg[3]:
             print("bad name conflict")
         self.namesDict[msg[2]]=msg[3]
+        print(self.namesDict)
     elif (command == "newPlayer"):
         newPID = msg[1]
-        x = self.width/2
-        y = self.height/2
-        self.otherStrangers[newPID] = Dot(newPID, x, y,False)
-        self.dotGroup.add(self.otherStrangers[newPID])
-        if len(self.dotGroup)==BACKLOG:
+        self.namesDict[newPID]=''
+        x = 0
+        y = 0
+        self.otherStrangers[newPID] = Piece(newPID, x, y,False)
+        self.PieceGroup.add(self.otherStrangers[newPID])
+        if len(self.PieceGroup)==BACKLOG:
             self.lobbyMode=False
     elif (command == "playerMoved"):
         PID = msg[1]

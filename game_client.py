@@ -9,8 +9,9 @@ import threading
 from queue import Queue #should be 'from Queue import Queue if python2.x 
 from processMessage import processMessage 
 import inputbox
-hostAddress=input("enter the host's IP address: \n")
-HOST = str(hostAddress) # put your IP address here if playing on multiple computers
+#hostAddress=input("enter the host's IP address: \n")
+#HOST = str(hostAddress) # put your IP address here if playing  on multiple computers
+HOST='128.237.170.84'
 PORT = 50009
 BACKLOG=2
 #need to make sure host, port match the server 
@@ -36,41 +37,53 @@ def handleServerMsg(server, serverMsg):
 # Barebones timer, mouse, and keyboard events
 
 import pygame
-from dots import Dot
+from Pieces import Piece
 from pygamegame import PygameGame
+from Square import Square 
 import random
+from Board import Board 
+pygame.font.init()
 ####################################
 # customize these functions
 ####################################
 class Game(PygameGame): #mimics game.py 
   def init(self):
+    cols,rows=15,15
+    self.gameBoard = Board(self.height,self.width,cols,rows)
     self.bgColor=(102,255,255)
-    Dot.init()
-    self.me= Dot("lonely",self.width/2,self.height/2,True) #last parameter says it's me 
+    Piece.init()
+    self.me= Piece("lonely",0,0,True) #last parameter says it's me 
     self.otherStrangers=dict()
-    self.dotGroup=pygame.sprite.Group()
-    self.dotGroup.add(self.me)
+    self.PieceGroup=pygame.sprite.Group()
+    self.PieceGroup.add(self.me)
     Game.startScreen=pygame.transform.scale(
             pygame.image.load('images/startScreen.jpg').convert_alpha(),
             (self.width, self.height))
-    self.lobbyMode=True 
+    self.lobbyMode=True  
     self.namesDict=dict() #key is PID, value is the stringed name
+    self.myfont=pygame.font.SysFont('Comic Sans MS', 40)
   def keyPressed(self,code,mod):
+    if code == pygame.K_SEMICOLON:
+      pygame.quit()
     msg="" 
-    if code == pygame.K_SPACE:
-      x = random.randint(0, self.width)
-      y = random.randint(0, self.height)
-      # teleport myself
-      self.me.teleport(x, y)
-      # update the message
-      msg = "playerTeleported %d %d\n" % (x, y)
-
+    if code == pygame.K_LEFT:
+        if self.me.move(-self.me.dx,0):
+            msg="playerMoved %d 0\n" %(-self.me.dx)
+    if code == pygame.K_RIGHT:
+        if self.me.move(self.me.dx,0):
+            msg="playerMoved %d 0\n" %(self.me.dx)
+    if code == pygame.K_UP:
+        if self.me.move(0,-self.me.dy):
+            msg="playerMoved 0 %d\n" %(-self.me.dy)
+    if code == pygame.K_DOWN:
+        if self.me.move(0,self.me.dy):
+            msg="playerMoved 0 %d\n" %(self.me.dy)
     # send the message to other players!
     if (msg != ""):
       print ("sending: ", msg,)
       self.server.send(msg.encode())
   def timerFired(self,dt):
-    self.dotGroup.update(dt,self.isKeyPressed,self.width,self.height,self.server)
+    self.PieceGroup.update(dt,self.isKeyPressed,self.width,self.height,self.server)
     while (serverMsg.qsize() > 0):
       msg = serverMsg.get(False)
       try:
@@ -80,8 +93,18 @@ class Game(PygameGame): #mimics game.py
       serverMsg.task_done()
   def redrawAll(self,screen):
       #draw everything as same color? 
-      self.dotGroup.draw(screen)
-      if self.lobbyMode: screen.blit(Game.startScreen,(0,0))
+      self.gameBoard.squareGroup.draw(screen)
+      self.PieceGroup.draw(screen)
+      for Piece in self.PieceGroup:
+          Piece.drawName(self,screen)
+      if self.lobbyMode: 
+          screen.blit(Game.startScreen,(0,0))
+          inc = 0
+          for playerID in self.namesDict:
+              namesText=self.myfont.render('%s name: %s' \
+              %(playerID,self.namesDict[playerID]),False,(128,255,0))
+              screen.blit(namesText,(self.width/10,self.height/10+inc))
+              inc += self.width/5 
 
 
 ##NOT TKINTER STUFF 
