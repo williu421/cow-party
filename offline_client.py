@@ -8,6 +8,7 @@ from Square import Square
 import random
 from Board import Board 
 from displayMessage import displayMessage
+from testGame import testGame
 pygame.font.init()
 ####################################
 # customize these functions
@@ -36,22 +37,18 @@ class Game(PygameGame): #mimics game.py
             self.mode = 'PLAY'
         return None #user can't do anything else in display mode 
     if self.mode == 'PLAY':
-      if code == pygame.K_0:
-        self.message = "press 'k' to continue"
-        self.mode='DISPLAYMESSAGE'
+        if code == pygame.K_h:#help screen 
+            self.message = ['Welcome to Cow Party! ',
+                            "This is the help screen!"]
+            self.mode='DISPLAYMESSAGE'
+        if code == pygame.K_t:
+            print('testing testGame')    
+            a=testGame(1920*3//5,1200*3//5)
+            a.run()
     msg="" 
-    if code == pygame.K_LEFT:
-        if self.me.move(-self.me.dx,0):
-            msg="playerMoved %d 0\n" %(-self.me.dx)
     if code == pygame.K_RIGHT:
-        if self.me.move(self.me.dx,0,self):
+        if self.me.move(6,self):
             msg="playerMoved %d 0\n" %(self.me.dx)
-    if code == pygame.K_UP:
-        if self.me.move(0,-self.me.dy):
-            msg="playerMoved 0 %d\n" %(-self.me.dy)
-    if code == pygame.K_DOWN:
-        if self.me.move(0,self.me.dy):
-            msg="playerMoved 0 %d\n" %(self.me.dy)
     #don't actually want the user to hold down the space bar 
     '''if server != None: #basically so the offline version works 
         if (msg != ""):
@@ -66,8 +63,10 @@ class Game(PygameGame): #mimics game.py
   def redrawAll(self,screen):
         self.gameBoard.squareGroup.draw(screen)
         self.PieceGroup.draw(screen)
-        for Piece in self.namesDict.values():
-            Piece.drawName(self,screen)
+        for Piece in self.PieceGroup: 
+            Piece.drawBeans(self,screen)
+            Piece.drawCoffee(self,screen)
+            #Piece.drawName(self,screen)
         if self.lobbyMode: 
             screen.blit(Game.startScreen,(0,0))
             inc = 0
@@ -82,4 +81,5 @@ class Game(PygameGame): #mimics game.py
 
 
 
-Game(1920*3//5,1200*3//5).run()
+mygame=Game(1920*3//5,1200*3//5)
+mygame.run()

@@ -10,7 +10,7 @@ class Board(object):
                     #the screen 
     def __init__(self,gameHeight,gameWidth,colNum=15,rowNum=15):
         Board.cols,Board.rows=colNum,rowNum
-        Square.init()
+        Square.init(gameHeight,gameWidth,colNum,rowNum)
         self.board = [([0]*colNum) for _ in range(rowNum)]
         self.squareGroup=pygame.sprite.Group()
         inc = 0
@@ -23,7 +23,7 @@ class Board(object):
                         self.squareGroup.add(self.board[row][col])
                     else: 
                         self.board[row][col]=\
-                        BlankSquare(col,row,inc,rowNum,colNum,gameHeight*Board.mar,
+                        RightSquare(col,row,inc,rowNum,colNum,gameHeight*Board.mar,
                         gameWidth*Board.mar)
                         self.squareGroup.add(self.board[row][col])
                         inc +=1 

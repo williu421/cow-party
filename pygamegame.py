@@ -49,7 +49,8 @@ class PygameGame(object):
         ''' return whether a specific key is being held '''
         return self._keys.get(key, False)
 
-    def __init__(self, width=600, height=400,serverMsg=None, server=None, fps=50, title="112 Pygame Game"):
+    def __init__(self, width=600, height=400,serverMsg=None, \
+    server=None, fps=50, title="112 Pygame Game",isOuter=True):
         self.server=server
         self.serverMsg=serverMsg
         self.width = width
@@ -59,6 +60,7 @@ class PygameGame(object):
         self.bgColor = (0, 0, 0)
         self.needUserInput=False 
         self.standbyColor= (255,0,127)
+        self.isOuter=isOuter
         pygame.init()
 
     def run(self):
@@ -73,11 +75,11 @@ class PygameGame(object):
 
         # call game-specific initialization
         self.init()
-        playing = True
+        self.playing = True
         while self.needUserInput: 
             print('on pause')
             screen.fill(self.standbyColor)
-        while playing:
+        while self.playing:
             time = clock.tick(self.fps)
             self.timerFired(time)
             for event in pygame.event.get():
@@ -98,12 +100,11 @@ class PygameGame(object):
                     self._keys[event.key] = False
                     self.keyReleased(event.key, event.mod)
                 elif event.type == pygame.QUIT:
-                    playing = False
+                    self.playing = False
             screen.fill(self.bgColor)
             self.redrawAll(screen)
             pygame.display.flip()
-
-        pygame.quit()
+        if self.isOuter: pygame.quit()
 
 
 def main():

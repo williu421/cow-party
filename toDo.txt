@@ -1,0 +1,20 @@
+Make more square subclasses
+    transition squares
+    update interactions 
+
+make the piece attributes
+    coins
+    stars 
+    isMyTurn (or make this a Game attribute)
+    
+minigames 
+
+help screen
+    how to play 
+    controls 
+    make sure you still receive input during this time
+        alternate: only help screen on your turn
+
+move (in pieces): 
+    send the message when it happens 
+    at some point switch to ordinals instead of the locations 

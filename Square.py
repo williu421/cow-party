@@ -2,17 +2,27 @@ import pygame
 import math
 from GameObject import GameObject
 import random
-
 class Square(GameObject): 
     margin = 10
+    ordDict=dict()
     @staticmethod
-    def init():
-        Square.brownSquare = pygame.transform.rotate(pygame.transform.scale(
-            pygame.image.load('images/brownSquare.png').convert_alpha(),
+    def init(gameHeight,gameWidth,colNum,rowNum):
+        def loadImage(imagePath):
+            return pygame.transform.rotate(pygame.transform.scale(
+            pygame.image.load(imagePath).convert_alpha(),
             (60, 60)), 0)
-        Square.blank=pygame.transform.rotate(pygame.transform.scale(
-            pygame.image.load('images/blank.png').convert_alpha(),
-            (60, 60)), 0)
+        Square.brownSquare = loadImage('images/brownSquare.png')
+        Square.blank=loadImage('images/blank.png')
+        Square.rightArrow=loadImage('images/rightArrow.png')
+        Square.leftArrow=loadImage('images/leftArrow.jpeg')
+        Square.upArrow=loadImage('images/upArrow.jpeg')
+        Square.downArrow=loadImage('images/downArrow.jpeg')
+        Square.blueSquare=loadImage('images/blueSquare.png')
+        Square.redSquare=loadImage('images/redSquare.png')
+        Square.greenSquare=loadImage('images/greenSquare.png')
+        Square.miniGameSquare=loadImage('images/MiniGameSquare.png')
+        Square.mushroomSquare=loadImage('images/MushroomSquare.png')
+        Square.bowserSquare=loadImage('images/bowserSquare.png')
     def __init__(self,xcoord,ycoord,ordinal,rows,cols,boardHeight,\
     boardWidth,image=None): 
         Square.margin = max(boardHeight,boardWidth)*1/10
@@ -27,13 +37,61 @@ class Square(GameObject):
         self.xcoord=xcoord
         self.ycoord=ycoord 
         self.ordinal=ordinal 
-    def interact(self,piece):
+        Square.ordDict[self.ordinal]=self
+    def land(self,piece,game):#when piece lands on it 
         pass
+    def tap(self,piece,game):#when piece passes on it 
+        pass
+    def getNext(self): #return y,x coords of the next square in line 
+        nextSq=Square.ordDict[(self.ordinal+1)%86]
+        return nextSq.ycoord,nextSq.xcoord
 class BlankSquare(Square): 
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,Square.blank)
-    def interact(self,piece,game):
-        game.message = '%s has hit a blankSquare!' %(piece.PID)
-        game.mode = 'DISPLAYMESSAGE'
+class RightSquare(Square):
+    def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth):
+        super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth,Square.rightArrow) 
+    def tap(self,piece,game):
+        piece.move(1,game)
+class BlueSquare(Square):
+    def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth):
+        super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth,Square.blueSquare)
+    def land(self,piece,game):
+        piece.beans += 3
+class RedSquare(Square): 
+    def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth):
+        super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth,Square.redSquare)
+    def land(self,piece,game):
+        piece.beans -= 3
+        if piece.beans <= 0:
+            piece.beans=0
+class GreenSquare(Square): 
+    def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth):
+        super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth,Square.greenSquare)
+    def land(self,piece,game):
+        pass  
+class MiniGameSquare(Square):
+    def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth):
+        super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth,Square.minigameSquare)
+class MushroomSquare(Square):
+    def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth):
+        super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth,Square.mushroomSquare)
+class BowserSquare(Square):
+    def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth):
+        super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
+    boardWidth,Square.bowserSquare)

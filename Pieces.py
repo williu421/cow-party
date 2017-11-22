@@ -12,13 +12,15 @@ pygame.font.init()
 class Piece(GameObject):
     @staticmethod
     def init():
-        Piece.cowImage = pygame.transform.rotate(pygame.transform.scale(
-            pygame.image.load('images/cow.jpeg').convert_alpha(),
+        def imageLoad(imagePath):
+            return pygame.transform.rotate(pygame.transform.scale(
+            pygame.image.load(imagePath).convert_alpha(),
             (60, 100)), 0)
-        Piece.squidImage=pygame.transform.rotate(pygame.transform.scale(
-            pygame.image.load('images/Alpaca.png').convert_alpha(),
-            (60, 100)), 0)
-    def __init__(self, PID, xgrid, ygrid,isMe):
+        Piece.cowImage = imageLoad('images/cow.jpeg')
+        Piece.squidImage=imageLoad('images/Alpaca.png')
+        Piece.beanImage=imageLoad('images/bean.png')
+        Piece.coffeeImage=imageLoad('images/coffee.jpeg')
+    def __init__(self, PID, xgrid, ygrid,isMe,beans=0,coffee=0):
         xpoint=Square.margin+(xgrid+1/2)*Square.cellWidth
         ypoint=Square.margin+(ygrid+1/2)*Square.cellHeight
         if isMe: super(Piece, self).__init__(xpoint, ypoint, Piece.cowImage, 30)
@@ -29,18 +31,19 @@ class Piece(GameObject):
         self.ygrid = ygrid
         self.dx,self.dy=1,1
         self.size = 30
-    def move(self, dx, dy,game):
-        if (self.xgrid+dx >= Board.cols or self.xgrid+dx<0 or self.ygrid+dy<0 or \
-        self.ygrid >= Board.rows):
-            return False 
-        self.xgrid += dx
-        self.ygrid += dy
-        game.gameBoard.board[self.ygrid][self.xgrid].interact(self,game) #if special square
-        self.x=Square.margin+(self.xgrid+1/2)*Square.cellWidth
-        self.y=Square.margin+(self.ygrid+1/2)*Square.cellHeight
-        return True 
-
+        self.beans=beans 
+        self.coffee=0
+    def move(self, moves,game):
+        currSq=game.gameBoard.board[self.ygrid][self.xgrid]
+        self.ygrid,self.xgrid = currSq.getNext()
+        newSq=game.gameBoard.board[self.ygrid][self.xgrid]
+        if moves == 0: 
+            newSq.land(self,game)
+        else: 
+            newSq.tap(self,game) #tap if only passing on it 
+            self.move(moves-1,game)
     def teleport(self, x, y):
+        print("why are we teleporting")
         self.x = x
         self.y = y
 
@@ -51,7 +54,19 @@ class Piece(GameObject):
         nameFont=pygame.font.SysFont('Comic Sans MS', 40)
         namesText=nameFont.render('%s' \
           %(outerGame.namesDict[self.PID]),False,(0,0,0))
-        screen.blit(namesText,(self.x-self.size,self.y-self.size*3/2))
+        screen.blit(namesText,(self.x-self.size,self.y-self.size*3/2))  
+    def drawBeans(self,outerGame,screen):
+        screen.blit(Piece.beanImage,(self.width//15,self.height//10))
+        nameFont=pygame.font.SysFont('Comic Sans MS', 40)
+        namesText=nameFont.render('x %d' \
+          %(self.beans),False,(0,0,0))
+        screen.blit(namesText,(self.width//10+60,self.height//10))
+    def drawCoffee(self,outerGame,screen):
+        screen.blit(Piece.coffeeImage,(self.width//15,self.height//3))
+        nameFont=pygame.font.SysFont('Comic Sans MS', 40)
+        namesText=nameFont.render('x %d' \
+          %(self.coffee),False,(0,0,0))
+        screen.blit(namesText,(self.width//10+60,self.height//3))
     def update(self, dt, keysDown, screenWidth, screenHeight,server):
         super(Piece, self).update(screenWidth, screenHeight)
 
