@@ -17,4 +17,4 @@ help screen
 
 move (in pieces): 
     send the message when it happens 
-    at some point switch to ordinals instead of the locations 
+    

@@ -1,3 +1,4 @@
+'This file written by William Liu, WLIU2'
 import socket
 import threading
 from queue import Queue #should be 'from Queue import Queue if python2.x 
@@ -7,7 +8,15 @@ from pygamegame import PygameGame
 import random
 from inputbox import *
 import pygame_textinput
+from timedScreen import *
 
+def namesCheck(self,BACKLOG): 
+    flag=True
+    for i in range(1,BACKLOG+1):
+        if self.namesDict['Player%d'%i]=='':
+            flag = False
+            break
+    if flag: self.mode='PLAY'
 def processMessage(self, msg,BACKLOG):
     print("received: ", msg, "\n")
     msg = msg.split()
@@ -18,6 +27,7 @@ def processMessage(self, msg,BACKLOG):
         self.needUserInput=True #stop the program for a second 
         myName=input("Enter your name: \n")
         self.namesDict[myPID]=myName
+        self.piecesDict[myPID]=self.me
         self.needUserInput=False 
         myMsg='newName %s %s\n'%(myPID, myName)
         print("sending: ",myMsg,)
@@ -30,29 +40,35 @@ def processMessage(self, msg,BACKLOG):
             myMsg = 'nameVal %s %s\n'%(playerPID,self.namesDict[playerPID])
             print("sending: ", myMsg,)
             self.server.send(myMsg.encode())
+        namesCheck(self,BACKLOG)
     elif (command == "nameVal"): 
         self.namesDict[msg[2]]=self.namesDict.get(msg[2],'') 
         #in this case, the player hosting this hasn't  seen the others yet 
         if self.namesDict[msg[2]] != '' and self.namesDict[msg[2]]!=msg[3]:
             print("bad name conflict")
         self.namesDict[msg[2]]=msg[3]
-        print(self.namesDict)
+        namesCheck(self,BACKLOG)
     elif (command == "newPlayer"):
         newPID = msg[1]
         self.namesDict[newPID]=''
-        x = 0
-        y = 0
-        self.otherStrangers[newPID] = Piece(newPID, x, y,False)
-        self.PieceGroup.add(self.otherStrangers[newPID])
-        if len(self.PieceGroup)==BACKLOG:
-            self.mode = 'PLAY'
+        self.piecesDict[newPID] = Piece(newPID, 14,14,False)
+        self.PieceGroup.add(self.piecesDict[newPID])
     elif (command == "playerMoved"):
         PID = msg[1]
-        dx = int(msg[2])
-        dy = int(msg[3])
-        self.otherStrangers[PID].move(dx, dy)
-    elif (command == "playerTeleported"):
-        PID = msg[1]
-        x = int(msg[2])
-        y = int(msg[3])
-        self.otherStrangers[PID].teleport(x, y)
+        val = int(msg[2])
+        self.piecesDict[PID].move(val.self)
+    elif (command == 'playerRolled'):
+        PID=msg[1]
+        val=int(msg[2])
+        self.movesLeft=(val%6+1)
+        self.diceGroup.empty()
+        self.screenGroup.add(diceScreen(2000,self,val))
+    elif (command == 'forkChoice'):
+        PID=msg[1]
+        choice=int(msg[2])
+        piece=self.piecesDict[PID]
+        fork = self.gameBoard.board[piece.ygrid][piece.xgrid]
+        fork.choice=choice
+        fork.moveOn(piece,self)
+    elif command=='turnOver':
+        self.turnHold=False
