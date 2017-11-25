@@ -9,7 +9,7 @@ from Square import Square
 import random
 from Board import Board 
 from displayMessage import displayMessage
-from testGame import testGame
+from boopGame import boopGame
 from Dice import Dice 
 pygame.font.init()
 ####################################
@@ -74,8 +74,8 @@ class Game(PygameGame): #mimics game.py
                             "This is the help screen!"]
             self.displayMessage=True
         if code == pygame.K_t:
-            print('testing testGame')    
-            a=testGame(1920*3//5,1200*3//5)
+            print('testing boopGame')    
+            a=boopGame(1920*3//5,1200*3//5)
             a.run()
         msg="" 
         if code == pygame.K_RIGHT:

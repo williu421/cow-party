@@ -2,6 +2,7 @@ import pygame
 import math
 from GameObject import GameObject
 import random
+from boopGame import boopGame
 class Square(GameObject): 
     margin = 10
     ordDict=dict()
@@ -111,16 +112,19 @@ class BlueSquare(Square):
     boardWidth,outerGame):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,Square.blueSquare,outerGame)
-    def tap(self,piece,game,moves):
+    '''def tap(self,piece,game,moves):
         if moves==1:
-            piece.beans+=1
+            piece.beans+=1'''
+    def tap(self,piece,game,moves):
+        if moves == 0:
+            game.mode='MINIGAME'
 class RedSquare(Square): 
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,Square.redSquare,outerGame)
     def tap(self,piece,game,moves):
-        if moves == 1:
+        if moves == 0:
             piece.beans -= 3
             if piece.beans <= 0:
                 piece.beans=0
@@ -136,6 +140,11 @@ class MiniGameSquare(Square):
     boardWidth,outerGame):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,Square.minigameSquare,outerGame)
+
+    def tap(self,piece,game,moves):
+        if moves == 1:
+            self.mode='MINIGAME'
+
 class MushroomSquare(Square):
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame):

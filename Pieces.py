@@ -9,7 +9,7 @@ import random
 from Board import Board 
 from GameObject import GameObject
 from Dice import Dice 
-from timedScreen import *
+from TimedScreen import *
 pygame.font.init()
 class Piece(GameObject):
     @staticmethod
@@ -51,7 +51,7 @@ class Piece(GameObject):
         self.x=Square.margin+(self.xgrid+1/2)*Board.cellWidth
         self.y=Square.margin+(self.ygrid+1/2)*Board.cellHeight
         print(self.ygrid,self.xgrid,newSq.ordinal)
-        newSq.tap(self,game,moves) 
+        newSq.tap(self,game,moves-1) 
     def changePID(self, PID):
         self.PID = PID
     def updateVisual(self):

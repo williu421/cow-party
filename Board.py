@@ -107,7 +107,6 @@ class Board(object):
         mkSq(BlueSquare,14,0)
         mkSq(MiniGameSquare,14,1)
         mkSq(BlueSquare,14,2)
-        print("total number of spaces is: ",Board.ordTrack)
 
 
 

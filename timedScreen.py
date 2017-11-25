@@ -1,14 +1,17 @@
 import pygame 
-from Dice import Dice 
+from Dice import Dice
+from displayMessage import * 
 class TimedScreen(pygame.sprite.Sprite):
-    def __init__(self,time,game):
+    def __init__(self,time,game,color=None):
         super().__init__()
-        print('made timedscreen', time)
+        print('made TimedScreen', time)
         self.time=time 
         self.width,self.height=game.width,game.height
         self.x,self.y=0,0 
+        self.color=color
         self.image=pygame.Surface((int(self.width),int(self.height)))
-        self.image.set_alpha(0) 
+        if self.color==None: self.image.set_alpha(0) 
+        else: self.image.fill(color)
         self.aliveTime=0
         self.rect = self.image.get_rect()
     def update(self,dt):
@@ -27,3 +30,7 @@ class diceScreen(TimedScreen):
         self.image = Dice.frames[self.value]
         w, h = self.image.get_size()
         self.rect = pygame.Rect(self.x - w / 2, self.y - h / 2, w, h)
+
+
+
+

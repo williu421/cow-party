@@ -12,7 +12,7 @@ from processMessage import processMessage
 import inputbox
 #hostAddress=input("enter the host's IP address: \n")
 #HOST = str(hostAddress) # put your IP address here if playing  on multiple computers
-HOST='128.237.143.116'
+HOST='128.237.169.163'
 PORT = 50009
 BACKLOG=2
 #need to make sure host, port match the server 
@@ -43,11 +43,11 @@ from pygamegame import PygameGame
 from Square import Square 
 import random
 from Board import Board 
-from displayMessage import displayMessage
-from testGame import testGame
+from displayMessage import *
+from boopGame import boopGame
 from Dice import Dice 
 from clientHelpers import *
-from timedScreen import *
+from TimedScreen import *
 from pprint import pprint 
 pygame.font.init()
 ####################################
@@ -75,12 +75,17 @@ class Game(PygameGame): #mimics game.py
       fork=self.gameBoard.board[self.me.ygrid][self.me.xgrid]
       if code == pygame.K_a:
           fork.choice=1
-          msg='forkChoice 1 \n' 
+          msg='forkChoice 1 \n'
+          print ("sending: ", msg,)
+          self.server.send(msg.encode()) 
           fork.moveOn(self.me,self)
       elif code==pygame.K_b:
           fork.choice=2
           msg = 'forkChoice 2 \n'
+          print ("sending: ", msg,)
+          self.server.send(msg.encode())
           fork.moveOn(self.me,self)
+      msg='' #don't want to send message twice 
     if self.mode == 'PLAY':
       if self.turnPlayer==self.me.PID:
     #MAKE SURE THE DICE WORKS ACROSS MULTIPLE PLAYERS
@@ -104,11 +109,16 @@ class Game(PygameGame): #mimics game.py
         print ("sending: ", msg,)
         self.server.send(msg.encode())
   def timerFired(self,dt):
-    if self.mode=='PLAY':
+    if self.mode=='PLAY' or self.mode == 'MINIGAME':
       self.screenGroup.update(dt)
       self.diceGroup.update(dt)
       self.PieceGroup.update(dt,self.isKeyPressed,self.width,self.height,self.server)
-      if len(self.screenGroup)==0 and len(self.diceGroup)==0 and not self.isFork:
+      if self.mode == 'MINIGAME' and len(self.screenGroup)==0:
+        print('testing boopGame')    
+        self.currentMinigame=boopGame(1920*3//5,1200*3//5,self)
+        self.currentMinigame.run()
+      elif self.mode == 'PLAY' and\
+      len(self.screenGroup)==0 and len(self.diceGroup)==0 and not self.isFork:
         print('about to movecheck')
         moveCheck(self,dt)
     while (serverMsg.qsize() > 0):
@@ -121,7 +131,7 @@ class Game(PygameGame): #mimics game.py
       serverMsg.task_done()
   def redrawAll(self,screen):
       #draw everything as same color? 
-      if self.mode == 'PLAY': 
+      if self.mode == 'PLAY' or self.mode=='MINIGAME': 
         screen.blit(Game.cowBackground,(0,0))
         self.gameBoard.squareGroup.draw(screen)
         self.PieceGroup.draw(screen)
@@ -131,6 +141,9 @@ class Game(PygameGame): #mimics game.py
             Piece.drawName(self,screen)
         drawBeansAndCoffee(self,screen,0,0,'Player1')
         drawBeansAndCoffee(self,screen,self.width-150,self.height//30,'Player2')
+        if self.movesLeft!=None:
+          Text('movesLeft: %d' %(self.movesLeft),
+          100,self.height//4,'Arial Bold',(0,0,0),40).Draw(screen)
       if self.mode=='LOBBY': 
           screen.blit(Game.startScreen,(0,0))
           inc = 0

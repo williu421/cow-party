@@ -8,7 +8,7 @@ from pygamegame import PygameGame
 import random
 from inputbox import *
 import pygame_textinput
-from timedScreen import *
+from TimedScreen import *
 
 def namesCheck(self,BACKLOG): 
     flag=True
