@@ -1,20 +1,17 @@
 Make more square subclasses
     transition squares
     update interactions 
-
-make the piece attributes
-    coins
-    stars 
-    isMyTurn (or make this a Game attribute)
     
 minigames 
+    memory game 
+    pong 
 
-help screen
+auxiliary screens
+    intro screen
+    help screen
     how to play 
-    controls 
-    make sure you still receive input during this time
-        alternate: only help screen on your turn
+        controls 
+    end of game screen
 
-move (in pieces): 
-    send the message when it happens 
+
     

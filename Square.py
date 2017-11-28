@@ -117,7 +117,7 @@ class BlueSquare(Square):
             piece.beans+=1'''
     def tap(self,piece,game,moves):
         if moves == 0:
-            game.mode='MINIGAME'
+            game.mode='MEMORYGAME'
 class RedSquare(Square): 
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame):
@@ -142,8 +142,8 @@ class MiniGameSquare(Square):
     boardWidth,Square.minigameSquare,outerGame)
 
     def tap(self,piece,game,moves):
-        if moves == 1:
-            self.mode='MINIGAME'
+        if moves == 0:
+            game.mode='BOOPGAME'
 
 class MushroomSquare(Square):
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\

@@ -2,7 +2,7 @@ import pygame
 from Dice import Dice
 from displayMessage import * 
 class TimedScreen(pygame.sprite.Sprite):
-    def __init__(self,time,game,color=None):
+    def __init__(self,time,game,color=None,textList=None):
         super().__init__()
         print('made TimedScreen', time)
         self.time=time 
@@ -13,13 +13,18 @@ class TimedScreen(pygame.sprite.Sprite):
         if self.color==None: self.image.set_alpha(0) 
         else: self.image.fill(color)
         self.aliveTime=0
-        self.rect = self.image.get_rect()
+        self.textList=textList
+        self.rect=self.image.get_rect()
     def update(self,dt):
         self.aliveTime+=dt
         if self.aliveTime>=self.time:
             print('killing screen')  
             self.kill()  
-
+    def drawText(self,screen):
+        if self.textList!=None:
+            for Text in self.textList:
+                Text.draw(screen)
+        
 class diceScreen(TimedScreen): 
     def __init__(self,time,game,value):
         super().__init__(time,game)

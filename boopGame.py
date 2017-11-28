@@ -1,3 +1,5 @@
+##outer framework from 112 class site
+
 from pygamegame import PygameGame
 import pygame
 from displayMessage import *
@@ -8,7 +10,7 @@ pygame.init()
 pygame.font.init()
 
 class boopGame(PygameGame):
-    def __init__(self, width, height, outerGame,serverMsg=None, server=None, fps=50, title="112 Pygame Game"):
+    def __init__(self, width, height, outerGame,serverMsg=None, server=None, fps=50, title="boopGame"):
         self.outerGame=outerGame
         self.server=outerGame.server
         self.serverMsg=outerGame.serverMsg
@@ -43,10 +45,6 @@ class boopGame(PygameGame):
             self.playing=False
         if code == pygame.K_9: #for debugging 
             pprint(vars(self))
-        if code == pygame.K_j:
-            self.outerGame.mode='PLAY'
-            self.outerGame.currentMinigame=None 
-            self.playing=False
         if self.mode == 'INTRO':
             if code == pygame.K_a:
                 self.ready=True
@@ -72,8 +70,44 @@ class boopGame(PygameGame):
             self.timeCounter-=dt
             if self.timeCounter<=0:
                 self.mode='GAMEOVER'
-                self.screenGroup.add(TimedScreen(2000,self.outerGame,
-                (102,204,0)))
+                gameOverText=Text("Game Over! Your score was %d boops"\
+                %(self.boopCount),self.width//2,self.height//2,'Arial Bold',
+                (153,51,255),40)
+                self.screenGroup.add(TimedScreen(1000,self.outerGame,
+                (102,204,0),[gameOverText]))
+                msg='Score %d \n' %self.boopCount
+                print('sending: ',msg)
+                self.outerGame.server.send(msg.encode())
+                self.outerGame.minigameScores[-1][self.outerGame.me.PID]=self.boopCount
+        if self.mode=='GAMEOVER' and len(self.screenGroup)==0:
+            gameExitTextList=[]
+            scoresDict=self.outerGame.minigameScores[-1]
+            inc=0
+            #DOESN'T WORK IF WE EXPAND TO MORE THAN TWO PLAYERS
+            if scoresDict['Player1']==scoresDict['Player2']: #tie case
+                newText= Text("It's a tie! Both players had %d boops; no beans awarded"\
+                %(scoresDict['Player1']),
+                self.width//2,self.height//2-40+80*inc,'Arial Bold',(0,0,0),40)
+                gameExitTextList.append(newText)
+            else:
+                for PID in sorted(scoresDict,key=scoresDict.get,reverse=True):
+                    self.outerGame.piecesDict[PID].beans+=5-5*inc 
+                    if self.outerGame.piecesDict[PID].beans<=0:
+                        self.outerGame.piecesDict[PID].beans=0
+                    newText= Text('Score for %s: %d, receives %d beans'\
+                    %(self.outerGame.namesDict[PID],scoresDict[PID],5-5*inc),
+                    self.width//2,self.height//2-40+80*inc,'Arial Bold',(0,0,0),40)
+                    gameExitTextList.append(newText)
+                    inc+=1
+            if len(gameExitTextList)==1:
+                print('exiting minigame')
+                exitScreen=TimedScreen(1500,self.outerGame,
+                (153,51,255),gameExitTextList)
+                self.screenGroup.add(exitScreen) 
+                self.mode='FINISHED'
+        if self.mode=='FINISHED' and len(self.screenGroup)==0:
+            self.playing=False
+            self.outerGame.mode='PLAY'       
         keysDown=self.isKeyPressed
         while (self.serverMsg.qsize() > 0):
             msg = self.serverMsg.get(False)
@@ -85,30 +119,34 @@ class boopGame(PygameGame):
                     self.otherReady=True
                     if self.ready:
                         self.mode = 'PLAY'
+                if command == 'Score':
+                    scorePID=msg[1]
+                    score = int(msg[2])
+                    self.outerGame.minigameScores[-1][scorePID]=score 
             except Exception as e:
                 print("failed")
                 print(e)
             self.serverMsg.task_done()
+        
     def redrawAll(self,screen):
         if len(self.screenGroup)>0:
             self.screenGroup.draw(screen)
-            Text("Game Over! Your score was %d boops"%(self.boopCount),self.width//2,self.height//2,'Arial Bold',(153,51,255),40).Draw(screen)
+            for userScreen in self.screenGroup:
+                userScreen.drawText(screen)
         else:
             if self.mode=='INTRO':
                 Text('Welcome to the Boop Game!',
-                self.width//2,self.height//2-40,'Arial Bold',(0,0,0),40).Draw(screen)
+                self.width//2,self.height//2-40,'Arial Bold',(0,0,0),40).draw(screen)
                 Text("The goal is to boop clicking the dog's nose, as fast as possible!",
-                self.width//2,self.height//2,'Arial Bold',(0,0,0),40).Draw(screen)
+                self.width//2,self.height//2,'Arial Bold',(0,0,0),40).draw(screen)
                 Text("Press 'a' when you're ready!",
-                self.width//2,self.height//2+40,'Arial Bold',(0,0,0),40).Draw(screen)
+                self.width//2,self.height//2+40,'Arial Bold',(0,0,0),40).draw(screen)
             if self.mode=='PLAY':
                 screen.blit(self.doggo,
                 (self.doggoX,self.doggoY))
                 Text("Current score: %d" %(self.boopCount),
-                self.width//10,self.height*3//10,'Arial Bold',(153,51,255),40).Draw(screen)
+                self.width//10,self.height*3//10,'Arial Bold',(153,51,255),40).draw(screen)
                 Text("Time left: %d" %((self.timeCounter)//1000),
-                self.width//10,self.height//10,'Arial Bold',(153,51,255),40).Draw(screen)
-            if self.mode=='GAMEOVER':
-                self.playing=False
-                self.outerGame.mode='PLAY' 
+                self.width//10,self.height//10,'Arial Bold',(153,51,255),40).draw(screen)
 
+            

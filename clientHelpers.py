@@ -11,7 +11,6 @@ import socket
 import threading
 from queue import Queue #should be 'from Queue import Queue if python2.x 
 from processMessage import processMessage 
-import inputbox
 from TimedScreen import *
 
 def setUpGame(self):
@@ -27,6 +26,7 @@ def setUpGame(self):
     #signals if there needs to be an overlay with a message on it 
     self.isFork=False #change to true if we're at a fork 
     self.gonnaBeTurn=1 #the turn that is about to happen
+    self.turnLimit=5
     self.turnPlayer='Player1'  
     self.movesLeft=None#how many moves the turn player has left 
     self.currentMinigame=None #the actual instance of the current minigame 
@@ -35,7 +35,8 @@ def setUpGame(self):
 
     self.namesDict=dict() #key is PID, value is the stringed name
     self.piecesDict=dict() #key is PID, value is the Piece instance 
-    self.otherStrangers=dict() #keeps track of every other player 
+    self.otherStrangers=dict() #keeps track of every other player
+    self.minigameScores=[] #list of dicts that track the scores of the players 
 
     self.PieceGroup=pygame.sprite.Group() 
     #use Pygame's Group to update all pieces simultaneously 
@@ -55,8 +56,11 @@ def nextTurn(self): #when one turn is over
             self.piecesDict[PID].myMove(self)
             break
     if makeNewTurn:
-        self.gonnaBeTurn+=1
-        print('made new turn, turn is: ',self.gonnaBeTurn)
+        if self.gonnaBeTurn>self.turnLimit:
+            self.mode='GAMEOVER'
+        else:
+            self.gonnaBeTurn+=1
+            print('made new turn, turn is: ',self.gonnaBeTurn)
 def moveCheck(self,dt): 
     #check which player needs to move, if any 
     if self.movesLeft == None: #i.e. game just started 
@@ -70,7 +74,7 @@ def moveCheck(self,dt):
     else: 
         self.piecesDict[self.turnPlayer].move(self.movesLeft,self)
         self.movesLeft-=1
-        self.screenGroup.add(TimedScreen(1000,self))
+        self.screenGroup.add(TimedScreen(700,self))
 
     '''if self.mode == 'PLAY' or self.mode=='DISPLAYMESSAGE':
       newTurn = True #flag if all the pieces have moved this turn

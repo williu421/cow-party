@@ -6,8 +6,6 @@ import pygame
 from Pieces import Piece
 from pygamegame import PygameGame
 import random
-from inputbox import *
-import pygame_textinput
 from TimedScreen import *
 
 def namesCheck(self,BACKLOG): 
@@ -62,7 +60,7 @@ def processMessage(self, msg,BACKLOG):
         val=int(msg[2])
         self.movesLeft=(val%6+1)
         self.diceGroup.empty()
-        self.screenGroup.add(diceScreen(2000,self,val))
+        self.screenGroup.add(diceScreen(1000,self,val))
     elif (command == 'forkChoice'):
         PID=msg[1]
         choice=int(msg[2])

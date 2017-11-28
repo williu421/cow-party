@@ -12,7 +12,7 @@ class Text: #from https://stackoverflow.com/questions/32673965/pygame-blitting-c
         self.txt = font.render(text, True, color)
         self.size = font.size(text) #(width, height)
     # Draw Method
-    def Draw(self, screen):
+    def draw(self, screen):
         drawX = self.x - (self.size[0] / 2.)
         drawY = self.y - (self.size[1] / 2.)
         coords = (drawX, drawY)
@@ -28,6 +28,6 @@ def displayMessage(screen,x,y,messageList,width,height):
     for message in messageList:
         Text(message,
             width//2,height//2-len(messageList)//2*40+inc,
-            'Arial Bold',(255,255,0),40).Draw(screen)
+            'Arial Bold',(255,255,0),40).draw(screen)
         inc += 40
 

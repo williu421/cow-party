@@ -1,6 +1,7 @@
 ##########################
 # Based on the Piece CLASS
 # by Kyle Chin
+##outer framework from 112 class site
 ##########################
 import pygame
 from pygamegame import PygameGame
