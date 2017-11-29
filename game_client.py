@@ -13,7 +13,7 @@ from queue import Queue #should be 'from Queue import Queue if python2.x
 from processMessage import processMessage 
 #hostAddress=input("enter the host's IP address: \n")
 #HOST = str(hostAddress) # put your IP address here if playing  on multiple computers
-HOST='128.237.162.60'
+HOST='128.237.170.80'
 PORT = 50009
 BACKLOG=2
 #need to make sure host, port match the server 
@@ -114,6 +114,8 @@ class Game(PygameGame): #mimics game.py
         print ("sending: ", msg,)
         self.server.send(msg.encode())
   def timerFired(self,dt):
+    if self.mode == 'INTRO':
+      self.screenGroup.update(dt)
     if self.mode in Game.modeList():
       self.screenGroup.update(dt)
       self.diceGroup.update(dt)
@@ -141,19 +143,23 @@ class Game(PygameGame): #mimics game.py
         print(e)
       serverMsg.task_done()
   def redrawAll(self,screen):
+      if self.mode=='INTRO':
+        self.screenGroup.draw(screen)
+        for userScreen in self.screenGroup:
+          userScreen.drawText(screen)
       #draw everything as same color? 
       if self.mode in Game.modeList(): 
         screen.blit(Game.cowBackground,(0,0))
         self.gameBoard.squareGroup.draw(screen)
         self.PieceGroup.draw(screen)
         self.diceGroup.draw(screen)
-        self.screenGroup.draw(screen)
         for userScreen in self.screenGroup:
           userScreen.drawText(screen)
         for Piece in self.PieceGroup:
             Piece.drawName(self,screen)
         drawBeansAndCoffee(self,screen,0,0,'Player1')
         drawBeansAndCoffee(self,screen,self.width-150,self.height//30,'Player2')
+        self.screenGroup.draw(screen)
         if self.movesLeft!=None:
           Text('movesLeft: %d' %(self.movesLeft),
           100,self.height//4,'Arial Bold',(0,0,0),40).draw(screen)

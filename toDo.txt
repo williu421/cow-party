@@ -1,10 +1,12 @@
 Make more square subclasses
     transition squares
     update interactions 
+    buy the cups 
     
 minigames 
-    memory game 
     pong 
+
+music 
 
 auxiliary screens
     intro screen
