@@ -99,7 +99,7 @@ class boopGame(PygameGame):
                     self.width//2,self.height//2-40+80*inc,'Arial Bold',(0,0,0),40)
                     gameExitTextList.append(newText)
                     inc+=1
-            if len(gameExitTextList)!=0:
+            if len(gameExitTextList)==1:
                 print('exiting minigame')
                 exitScreen=TimedScreen(1500,self.outerGame,
                 (153,51,255),gameExitTextList)

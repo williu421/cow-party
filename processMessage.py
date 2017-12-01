@@ -7,20 +7,14 @@ from Pieces import Piece
 from pygamegame import PygameGame
 import random
 from TimedScreen import *
-from displayMessage import *
 
 def namesCheck(self,BACKLOG): 
-    if self.doneReceiving:
-        return 
     flag=True
     for i in range(1,BACKLOG+1):
         if self.namesDict['Player%d'%i]=='':
             flag = False
             break
-    if flag: 
-        self.doneReceiving=True 
-        self.mode='INTRO'
-        self.screenGroup.add(introScreen(12000,self))
+    if flag: self.mode='PLAY'
 def processMessage(self, msg,BACKLOG):
     print("received: ", msg, "\n")
     msg = msg.split()

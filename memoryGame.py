@@ -8,7 +8,6 @@ from pprint import pprint
 from TimedScreen import *
 import numpy as np
 import copy
-import math
 pygame.init()
 pygame.font.init()
 pygame.display.set_mode((1,1), pygame.NOFRAME)
@@ -26,7 +25,7 @@ class memoryGame(PygameGame):
         self.bgColor = (102,204,0)
         self.isOuter=False
         self.timeCounter=15000 #milliseconds 
-        self.mode='INTRO' #switch between intro and play 
+        self.mode='PLAY' #switch between intro and play 
         self.ready=False
         self.otherReady=False
         self.screenGroup=pygame.sprite.Group()
@@ -34,13 +33,10 @@ class memoryGame(PygameGame):
         self.matchCount=0
         self.gameGrid=[([0] for _ in range(3)) for i in range(3)]
         self.initGrid()
-        memoryGame.makeGradient()
         self.cellWidth,self.cellHeight=250,250
         self.show=None
         self.show2=None 
-        self.clearedPairs=[]
-        self.colorMode=None  
-        self.readyForEnd=False 
+        self.clearedPairs=[] 
     @staticmethod
     def grabImages():
         def imageLoad(imagePath):
@@ -53,19 +49,7 @@ class memoryGame(PygameGame):
         memoryGame.grass=imageLoad('images/grass.png')
         memoryGame.brownCow=imageLoad('images/brownCow.png')
         memoryGame.door=imageLoad('images/door.jpg')
-    @staticmethod
-    def makeGradient():
-        memoryGame.colorList=[]
-        start=(51,51,204)
-        end=(255,0,0)
-        n=40
-        dt=((end[0]-start[0])/n,(end[1]-start[1])/n,(end[2]-start[2])/n)
-        def rint(n):
-            return max(int(n),0)
-        for i in range(n):
-            memoryGame.colorList.append((rint(start[0]+i*dt[0]),rint(start[1]+i*dt[1]),rint(start[2]+i*dt[2])))
-        memoryGame.colorList+=memoryGame.colorList[::-1]
-        print('gradient produces: ',memoryGame.colorList)
+    
     def initGrid(self): #get a random grid of images
         grid=((memoryGame.cow1,memoryGame.cow1,memoryGame.milk),
                 (memoryGame.milk,memoryGame.poop,memoryGame.grass),
@@ -124,27 +108,18 @@ class memoryGame(PygameGame):
                 if self.otherReady:
                     self.mode='PLAY'
     def mousePressed(self,x,y):
-        if self.mode=='PLAY': 
-            coords = self.mouseHelper(x,y,self.gameGrid)
-            if coords != None: 
-                row,col=coords 
-                if self.show == None: 
-                    self.show = (row,col)
-                    if self.gameGrid[row][col]==memoryGame.poop: 
-                        self.timeCounter-=3000
-                        self.colorMode=0
-                    self.screenGroup.add(TimedScreen(500,self,None,None))
-                elif self.show != (row,col): 
-                    self.show2 = (row,col)
-                    if self.gameGrid[row][col]==memoryGame.poop: 
-                        self.timeCounter-=3000
-                        self.colorMode=0
-                    self.screenGroup.add(TimedScreen(500,self,None,None))
+        print('mousepressed at: ',x,y)
+        coords = self.mouseHelper(x,y,self.gameGrid)
+        print('coords returns', coords)
+        if coords != None: 
+            row,col=coords 
+            if self.show == None: 
+                self.show = (row,col)
+                self.screenGroup.add(TimedScreen(500,self,None,None))
+            elif self.show != (row,col): 
+                self.show2 = (row,col)
+                self.screenGroup.add(TimedScreen(500,self,None,None))
     def timerFired(self,dt):
-        if self.colorMode!=None: 
-            self.bgColor=memoryGame.colorList[self.colorMode]
-            print('self.bgcolor is: ',self.bgColor)
-            self.colorMode=(self.colorMode+1) %len(memoryGame.colorList)
         self.screenGroup.update(dt)
         if len(self.screenGroup)==0: 
             if self.show!= None and self.show2!= None and\
@@ -174,7 +149,7 @@ class memoryGame(PygameGame):
                 print('sending: ',msg)
                 self.outerGame.server.send(msg.encode())
                 self.outerGame.minigameScores[-1][self.outerGame.me.PID]=self.matchCount
-        if self.mode=='GAMEOVER' and len(self.screenGroup)==0 and self.readyForEnd:
+        if self.mode=='GAMEOVER' and len(self.screenGroup)==0:
             gameExitTextList=[]
             scoresDict=self.outerGame.minigameScores[-1]
             inc=0
@@ -194,7 +169,7 @@ class memoryGame(PygameGame):
                     self.width//2,self.height//2-40+80*inc,'Arial Bold',(0,0,0),40)
                     gameExitTextList.append(newText)
                     inc+=1
-            if len(gameExitTextList)!=0:
+            if len(gameExitTextList)==1:
                 print('exiting minigame')
                 exitScreen=TimedScreen(1500,self.outerGame,
                 (153,51,255),gameExitTextList)
@@ -217,8 +192,7 @@ class memoryGame(PygameGame):
                 if command == 'Score':
                     scorePID=msg[1]
                     score = int(msg[2])
-                    self.outerGame.minigameScores[-1][scorePID]=score
-                    self.readyForEnd=True  
+                    self.outerGame.minigameScores[-1][scorePID]=score 
             except Exception as e:
                 print("failed")
                 print(e)
@@ -235,8 +209,6 @@ class memoryGame(PygameGame):
             self.width//2,self.height//2,'Arial Bold',(0,0,0),40).draw(screen)
             Text("Match as many as you can before time is out!",
             self.width//2,self.height//2+40,'Arial Bold',(0,0,0),40).draw(screen)
-            Text("Press 'a' when you're ready.",
-            self.width//2,self.height//2+80,'Arial Bold',(0,0,0),40).draw(screen)
         if self.mode=='PLAY':
             self.drawGrid(self.displayGrid,screen)
             Text("Time left: %d" %((self.timeCounter)//1000),

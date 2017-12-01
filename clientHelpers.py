@@ -43,12 +43,16 @@ def setUpGame(self):
     self.me= Piece("lonely",14,14,True) #last parameter says it's me 
     self.PieceGroup.add(self.me)
     self.diceGroup=pygame.sprite.Group()
+
     self.screenGroup=pygame.sprite.Group()
         #for screens that stop the flow of the game
     self.transScreenGroup=pygame.sprite.Group()
         #for screens that sit above the display, transparent
         # work for play mode only   
-    self.doneReceiving = False  
+    self.doneReceiving = False 
+    self.screenGroup=pygame.sprite.Group() 
+    #for screens that stop the flow of the game 
+
 def nextTurn(self): #when one turn is over 
     makeNewTurn=True 
     for PID in sorted(self.piecesDict.keys()):
@@ -78,11 +82,7 @@ def moveCheck(self,dt):
     else: 
         self.piecesDict[self.turnPlayer].move(self.movesLeft,self)
         self.movesLeft-=1
-        if self.mode=='PLAY':
-            self.screenGroup.add(TimedScreen(700,self,None,None,False))
-        else: 
-            self.screenGroup.add(TimedScreen(700,self,None,None,True))
-
+        self.screenGroup.add(TimedScreen(700,self))
 
     '''if self.mode == 'PLAY' or self.mode=='DISPLAYMESSAGE':
       newTurn = True #flag if all the pieces have moved this turn
