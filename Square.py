@@ -117,7 +117,10 @@ class BlueSquare(Square):
             piece.beans+=1'''
     def tap(self,piece,game,moves):
         if moves == 0:
-            game.mode='MEMORYGAME'
+            if game.gonnaBeTurn%2==0:
+                game.mode='MEMORYGAME'
+            else:
+                game.mode='BOOPGAME'
 class RedSquare(Square): 
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame):

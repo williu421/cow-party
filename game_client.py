@@ -13,7 +13,9 @@ from queue import Queue #should be 'from Queue import Queue if python2.x
 from processMessage import processMessage 
 #hostAddress=input("enter the host's IP address: \n")
 #HOST = str(hostAddress) # put your IP address here if playing  on multiple computers
+
 HOST='128.237.184.128'
+
 
 PORT = 50009
 BACKLOG=2
@@ -115,6 +117,8 @@ class Game(PygameGame): #mimics game.py
         print ("sending: ", msg,)
         self.server.send(msg.encode())
   def timerFired(self,dt):
+    if self.mode == 'INTRO':
+      self.screenGroup.update(dt)
     if self.mode in Game.modeList():
       self.screenGroup.update(dt)
       self.diceGroup.update(dt)
@@ -143,6 +147,10 @@ class Game(PygameGame): #mimics game.py
       serverMsg.task_done()
   def redrawAll(self,screen):
       #draw everything as same color? 
+      if self.mode=='INTRO':
+        self.screenGroup.draw(screen)
+        for userScreen in self.screenGroup:
+          userScreen.drawText(screen)
       if self.mode in Game.modeList(): 
         screen.blit(Game.cowBackground,(0,0))
         self.gameBoard.squareGroup.draw(screen)

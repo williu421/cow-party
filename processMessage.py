@@ -14,7 +14,9 @@ def namesCheck(self,BACKLOG):
         if self.namesDict['Player%d'%i]=='':
             flag = False
             break
-    if flag: self.mode='PLAY'
+    if flag: 
+        self.mode='INTRO'
+        self.screenGroup.add(introScreen(12000,self))
 def processMessage(self, msg,BACKLOG):
     print("received: ", msg, "\n")
     msg = msg.split()

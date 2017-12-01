@@ -1,12 +1,17 @@
 import pygame 
 from Dice import Dice
 from displayMessage import * 
+from pygame.surfarray import *
+from pygame.locals import *
+import collections
+import numpy 
+
 class TimedScreen(pygame.sprite.Sprite):
-    def __init__(self,time,game,color=None,textList=None):
+    def __init__(self,time,game,color=None,textList=None,transition=False):
         super().__init__()
         print('made TimedScreen', time)
+        self.time=time
         self.outerGame=game
-        self.time=time 
         self.width,self.height=game.width,game.height
         self.x,self.y=0,0 
         self.color=color
@@ -16,7 +21,13 @@ class TimedScreen(pygame.sprite.Sprite):
         self.aliveTime=0
         self.textList=textList
         self.rect=self.image.get_rect()
+        self.transition=transition
+        self.alpha=0 
+        self.fires=0
     def update(self,dt):
+        if self.transition: 
+            self.alpha+=(100/self.time)*(dt+20)
+            self.image.set_alpha(self.alpha) 
         self.aliveTime+=dt
         if self.aliveTime>=self.time:
             print('killing screen')  
@@ -36,7 +47,6 @@ class diceScreen(TimedScreen):
         self.image = Dice.frames[self.value]
         w, h = self.image.get_size()
         self.rect = pygame.Rect(self.x - w / 2, self.y - h / 2, w, h)
-
 
 class introScreen(TimedScreen):
     def __init__(self,time,game):
@@ -66,7 +76,7 @@ class introScreen(TimedScreen):
         self.alpha+=(255/self.time)*(dt)
         self.image.set_alpha(self.alpha) 
         self.fires+=1
-        kernel=20
+        kernel=15
         spacing=65
         fontColor=(255,128,0)
         if self.charTime>=(self.time/self.textLength):
@@ -85,7 +95,6 @@ class introScreen(TimedScreen):
     def drawText(self,screen):
         for text in self.drawList:
             text.draw(screen)
-
 
 
 
