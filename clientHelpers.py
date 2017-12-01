@@ -44,8 +44,11 @@ def setUpGame(self):
     self.PieceGroup.add(self.me)
     self.diceGroup=pygame.sprite.Group()
     self.screenGroup=pygame.sprite.Group()
+        #for screens that stop the flow of the game
+    self.transScreenGroup=pygame.sprite.Group()
+        #for screens that sit above the display, transparent
+        # work for play mode only   
     self.doneReceiving = False  
-    #for screens that stop the flow of the game 
 def nextTurn(self): #when one turn is over 
     makeNewTurn=True 
     for PID in sorted(self.piecesDict.keys()):
@@ -58,6 +61,7 @@ def nextTurn(self): #when one turn is over
     if makeNewTurn:
         if self.gonnaBeTurn>self.turnLimit:
             self.mode='GAMEOVER'
+            print("game over.")
         else:
             self.gonnaBeTurn+=1
             print('made new turn, turn is: ',self.gonnaBeTurn)

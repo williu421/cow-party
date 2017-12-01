@@ -10,6 +10,7 @@ class TimedScreen(pygame.sprite.Sprite):
     def __init__(self,time,game,color=None,textList=None,transition=False):
         super().__init__()
         print('made TimedScreen', time)
+        self.outerGame=game
         self.width,self.height=game.width,game.height
         self.x,self.y=0,0 
         self.color=color
@@ -55,15 +56,10 @@ class introScreen(TimedScreen):
         self.image=pygame.transform.scale(self.image,(self.width,self.height))
         self.rect=self.image.get_rect()
         self.image.set_alpha(255)
-        self.imageCopy=pygame.image.load('images/introBackground.jpg')
-        self.imageCopy=pygame.transform.scale(self.imageCopy,(self.width,self.height))
-        self.cowPalette=pygame.PixelArray(self.imageCopy)
-        self.redArray=pygame.surfarray.pixels_red(self.imageCopy)#get 2d array of pixels
-        print('dimensions of redarray are: ',len(self.redArray),len(self.redArray[0]))
-        self.greenArray=pygame.surfarray.pixels_green(self.imageCopy)
-        self.blueArray=pygame.surfarray.pixels_blue(self.imageCopy)
         self.currPrint=0
-        self.TextQueue=collections.deque(list("In a world of farm animals...\nyou are a cow..."))
+        self.TextQueue=collections.deque(list("In a world of farm animals...\nyou are a cow...\nyou must defeat the alpaca.\n \
+        Rules: press the space bar on your turn to roll the die.\n\
+        Do as the minigames say, and you will be victorious."))
         self.textLength=len(self.TextQueue)
         self.leftSide=self.width//2-200 #left margin of text
         self.charInc=0
@@ -73,6 +69,9 @@ class introScreen(TimedScreen):
     def update(self,dt):
         self.charTime+=dt 
         self.aliveTime+=dt
+        if self.aliveTime>=self.totalTime:
+            self.outerGame.mode='PLAY'
+            self.kill()
         self.alpha+=(255/self.time)*(dt)
         self.image.set_alpha(self.alpha) 
         self.fires+=1
