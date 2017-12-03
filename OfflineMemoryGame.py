@@ -8,16 +8,13 @@ from pprint import pprint
 from TimedScreen import *
 import numpy as np
 import copy
-import constants as c
 pygame.init()
 pygame.font.init()
 pygame.display.set_mode((1,1), pygame.NOFRAME)
 
-class memoryGame(PygameGame): 
-    def __init__(self, width, height, outerGame,serverMsg=None, server=None, fps=50, title="memoryGame"):
+class OfflineMemoryGame(PygameGame): 
+    def __init__(self, width, height, outerGame,serverMsg=None, server=None, fps=50, title="OfflineMemoryGame"):
         self.outerGame=outerGame
-        self.server=outerGame.server
-        self.serverMsg=outerGame.serverMsg
         self.width = width
         self.height = height
         self.fps = fps
@@ -30,7 +27,7 @@ class memoryGame(PygameGame):
         self.ready=False
         self.otherReady=False
         self.screenGroup=pygame.sprite.Group()
-        memoryGame.grabImages()
+        OfflineMemoryGame.grabImages()
         self.matchCount=0
         self.gameGrid=[([0] for _ in range(3)) for i in range(3)]
         self.initGrid()
@@ -44,19 +41,19 @@ class memoryGame(PygameGame):
             return pygame.transform.scale(
             pygame.image.load(imagePath).convert_alpha(),
             (200, 200))
-        memoryGame.cow1=imageLoad('images/cow1.png') #image from clip art 
-        memoryGame.milk=imageLoad('images/milk.png') #from clip art 
-        memoryGame.poop=imageLoad('images/poop.png')
-        memoryGame.grass=imageLoad('images/grass.png')
-        memoryGame.brownCow=imageLoad('images/brownCow.png')
-        memoryGame.door=imageLoad('images/door.jpg')
+        OfflineMemoryGame.cow1=imageLoad('images/cow1.png') #image from clip art 
+        OfflineMemoryGame.milk=imageLoad('images/milk.png') #from clip art 
+        OfflineMemoryGame.poop=imageLoad('images/poop.png')
+        OfflineMemoryGame.grass=imageLoad('images/grass.png')
+        OfflineMemoryGame.brownCow=imageLoad('images/brownCow.png')
+        OfflineMemoryGame.door=imageLoad('images/door.jpg')
     
     def initGrid(self): #get a random grid of images
-        grid=((memoryGame.cow1,memoryGame.cow1,memoryGame.milk),
-                (memoryGame.milk,memoryGame.poop,memoryGame.grass),
-                (memoryGame.grass,memoryGame.brownCow,memoryGame.brownCow))
+        grid=((OfflineMemoryGame.cow1,OfflineMemoryGame.cow1,OfflineMemoryGame.milk),
+                (OfflineMemoryGame.milk,OfflineMemoryGame.poop,OfflineMemoryGame.grass),
+                (OfflineMemoryGame.grass,OfflineMemoryGame.brownCow,OfflineMemoryGame.brownCow))
         self.gameGrid=np.random.permutation(grid)
-        self.displayGrid= [[memoryGame.door for _ in range(3)] for i in range(3)]
+        self.displayGrid= [[OfflineMemoryGame.door for _ in range(3)] for i in range(3)]
 
     def drawGrid(self,grid,screen):
         if self.show==None: 
@@ -103,11 +100,7 @@ class memoryGame(PygameGame):
         if self.mode == 'INTRO':
             if code == pygame.K_a:
                 self.ready=True
-                msg='Ready %s \n' %self.outerGame.me.PID
-                print('sending: ',msg)
-                self.outerGame.server.send(msg.encode())
-                if self.otherReady:
-                    self.mode='PLAY'
+                self.mode='PLAY'
     def mousePressed(self,x,y):
         print('mousepressed at: ',x,y)
         coords = self.mouseHelper(x,y,self.gameGrid)
@@ -145,15 +138,14 @@ class memoryGame(PygameGame):
                 (153,51,255),40)
                 self.screenGroup.add(TimedScreen(1000,self.outerGame,
                 (102,204,0),[gameOverText]))
-            
-                msg='Score %d \n' %self.matchCount
-                print('sending: ',msg)
-                self.outerGame.server.send(msg.encode())
                 self.outerGame.minigameScores[-1][self.outerGame.me.PID]=self.matchCount
         if self.mode=='GAMEOVER' and len(self.screenGroup)==0:
             gameExitTextList=[]
             scoresDict=self.outerGame.minigameScores[-1]
             inc=0
+            botScore=random.randint(scoresDict['Player1']-3,scoresDict['Player1']+3)
+            print('botscore is: ', botScore)
+            scoresDict['Player2'] = botScore
             #DOESN'T WORK IF WE EXPAND TO MORE THAN TWO PLAYERS
             if scoresDict['Player1']==scoresDict['Player2']: #tie case
                 newText= Text("It's a tie! Both players had %d matches; no beans awarded"\
@@ -170,7 +162,7 @@ class memoryGame(PygameGame):
                     self.width//2,self.height//2-40+80*inc,'Arial Bold',(0,0,0),40)
                     gameExitTextList.append(newText)
                     inc+=1
-            if len(gameExitTextList)==1:
+            if len(gameExitTextList)!=0:
                 print('exiting minigame')
                 exitScreen=TimedScreen(1500,self.outerGame,
                 (153,51,255),gameExitTextList)
@@ -180,24 +172,6 @@ class memoryGame(PygameGame):
             self.playing=False
             self.outerGame.mode='PLAY'       
         keysDown=self.isKeyPressed
-        while (self.serverMsg.qsize() > 0):
-            msg = self.serverMsg.get(False)
-            try:
-                print("received: ", msg, "\n")
-                msg = msg.split()
-                command = msg[0]
-                if command == 'Ready':
-                    self.otherReady=True
-                    if self.ready:
-                        self.mode = 'PLAY'
-                if command == 'Score':
-                    scorePID=msg[1]
-                    score = int(msg[2])
-                    self.outerGame.minigameScores[-1][scorePID]=score 
-            except Exception as e:
-                print("failed")
-                print(e)
-            self.serverMsg.task_done()
     def redrawAll(self,screen):
         if len(self.screenGroup)>0:
             self.screenGroup.draw(screen)

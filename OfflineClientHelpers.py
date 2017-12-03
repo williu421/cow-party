@@ -62,7 +62,13 @@ def nextTurn(self): #when one turn is over
             makeNewTurn=False 
             print('starting turn for: ',PID)
             self.turnPlayer=PID 
-            self.piecesDict[PID].myMove(self)
+            if PID == 'Player2': 
+                value = random.randint(0,41)
+                print('bot rolled: ',value)
+                self.movesLeft=(value%6+1)              
+                self.screenGroup.add(diceScreen(1000,self,value))
+            else: 
+                self.piecesDict[PID].myMove(self)
             break
     if makeNewTurn:
         if self.gonnaBeTurn>self.turnLimit:
@@ -88,19 +94,19 @@ def moveCheck(self,dt):
 def drawBeansAndCoffee(outerGame,screen,x,y,PID): 
     #draws the beans and coffee, duh
     piece=outerGame.piecesDict[PID]
-    nameFont=pygame.font.Sysfont(c.TEXTFONT , c.PLAYSIZE)
+    nameFont=pygame.font.SysFont(c.TEXTFONT , c.PLAYSIZE)
     namesText=nameFont.render('%s' \
     %(outerGame.namesDict[PID]),False,c.TEXTCOLOR)
     screen.blit(namesText,(x,y))
 
     screen.blit(Piece.beanImage,(x,y+50))
     namesText=nameFont.render('x %d' \
-        %(piece.beans),False,c.TEXTCOLOR)
+        %(piece.beans),False,c.TEXTCOLOR )
     screen.blit(namesText,(x+60,y+50))
 
     screen.blit(Piece.coffeeImage,(x,y+100))
     namesText=nameFont.render('x %d' \
-    %(piece.coffee),False,c.TEXTCOLOR)
+    %(piece.coffee),False,c.TEXTCOLOR )
     screen.blit(namesText,(x+60,y+100))
 
     

@@ -1,0 +1,3 @@
+TEXTFONT = 'Arial Bold'
+TEXTCOLOR = (255,0,0)
+PLAYSIZE = 45

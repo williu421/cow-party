@@ -1,6 +1,6 @@
 'This file written by William Liu, WLIU2'
 import pygame 
-
+import constants as c
 class Text: #from https://stackoverflow.com/questions/32673965/pygame-blitting-center
     # Constructror
     def __init__(self,text,x,y,fontChoice,color,fontSize):
@@ -23,7 +23,7 @@ def displayMessage(screen,x,y,messageList,width,height):
     s.fill((76,0,153))           # this fills the entire surface
     s.set_alpha(100)                # alpha level
     screen.blit(s, (0,0))    # (0,0) are the top-left coordinates
-    nameFont=pygame.font.SysFont('Comic Sans MS', 40)
+    nameFont=pygame.font.SysFont(c.TEXTFONT , 40)
     inc = 0
     for message in messageList:
         Text(message,

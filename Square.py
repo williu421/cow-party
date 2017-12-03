@@ -81,10 +81,19 @@ class ForkSquare(Square):
             self.outerGame.isFork=True
             self.outerGame.displayMessage=True
         else: 
-            print('%s landed on fork, waiting for their decision'%piece.PID)
-            self.outerGame.message=["waiting on other player"] 
-            self.outerGame.isFork=True
-            self.outerGame.displayMessage=True
+            try: 
+                print('got here at try block: 0', piece.PID)
+                assert(piece.PID==self.outerGame.bot.PID)
+                print('now here')
+                choice = random.randint(1,2)
+                self.choice=choice
+                print('bot chose: ', choice)
+                self.moveOn(self.outerGame.bot,self.outerGame)
+            except:
+                print('%s landed on fork, waiting for their decision'%piece.PID)
+                self.outerGame.message=["waiting on other player"] 
+                self.outerGame.isFork=True
+                self.outerGame.displayMessage=True
     def moveOn(self,piece,game):
         self.outerGame.isFork=False 
         self.outerGame.mode='PLAY'
@@ -116,6 +125,7 @@ class BlueSquare(Square):
         if moves==1:
             piece.beans+=1'''
     def tap(self,piece,game,moves):
+        return##REMINDER TO CHANGE THIS 
         if moves == 0:
             if game.gonnaBeTurn%2==0:
                 game.mode='MEMORYGAME'

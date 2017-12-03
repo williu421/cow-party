@@ -11,6 +11,7 @@ from Board import Board
 from GameObject import GameObject
 from Dice import Dice 
 from TimedScreen import *
+import constants as c
 pygame.font.init()
 class Piece(GameObject):
     @staticmethod
@@ -59,19 +60,19 @@ class Piece(GameObject):
         self.x=Square.margin+(self.xgrid+1/2)*Board.cellWidth
         self.y=Square.margin+(self.ygrid+1/2)*Board.cellHeight
     def drawName(self,outerGame,screen):
-        nameFont=pygame.font.SysFont('Comic Sans MS', 40)
+        nameFont=pygame.font.SysFont(c.TEXTFONT , 40)
         namesText=nameFont.render('%s' \
-          %(outerGame.namesDict[self.PID]),False,(0,0,0))
-        screen.blit(namesText,(self.x-self.size,self.y-self.size*3/2))  
+          %(outerGame.namesDict[self.PID]),False,c.TEXTCOLOR)
+        screen.blit(namesText,(self.x-self.size,self.y-self.size))  
     def drawBeans(self,outerGame,screen):
         screen.blit(Piece.beanImage,(outerGame.width//30,outerGame.height//30))
-        nameFont=pygame.font.SysFont('Comic Sans MS', 40)
+        nameFont=pygame.font.SysFont(c.TEXTFONT , 40)
         namesText=nameFont.render('x %d' \
           %(self.beans),False,(0,0,0))
         screen.blit(namesText,(outerGame.width//30+60,outerGame.height//30))
     def drawCoffee(self,outerGame,screen):
         screen.blit(Piece.coffeeImage,(outerGame.width//30,outerGame.height//7))
-        nameFont=pygame.font.SysFont('Comic Sans MS', 40)
+        nameFont=pygame.font.SysFont(c.TEXTFONT , 40)
         namesText=nameFont.render('x %d' \
           %(self.coffee),False,(0,0,0))
         screen.blit(namesText,(outerGame.width//30+60,outerGame.height//7))
