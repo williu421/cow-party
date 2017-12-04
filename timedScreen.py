@@ -52,7 +52,7 @@ class introScreen(TimedScreen):
     def __init__(self,time,game):
         super().__init__(time,game,None,None,True)
         self.totalTime=time
-        self.time=time-5000
+        self.time=time-1000
         self.image=pygame.image.load('images/introBackground.jpg')
         self.image=pygame.transform.scale(self.image,(self.width,self.height))
         self.rect=self.image.get_rect()

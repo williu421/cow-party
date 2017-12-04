@@ -36,7 +36,7 @@ class Piece(GameObject):
         self.ygrid = ygrid
         self.dx,self.dy=1,1
         self.size = 30
-        self.beans=beans 
+        self.beans=10 
         self.coffee=0
         self.turnsDone = 0#the number of turns this guy has completed 
         self.movesLeft=0 #for moving around the board

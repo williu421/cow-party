@@ -16,6 +16,7 @@ from pprint import pprint
 from OfflineMemoryGame import *
 import constants as c
 pygame.font.init()
+
 ####################################
 # customize these functions
 ####################################
@@ -70,9 +71,9 @@ class OfflineGame(PygameGame): #mimics game.py
         for piece in self.PieceGroup: 
           piece.xgrid = self.gameBoard.squareDict[0].xcoord
           piece.ygrid = self.gameBoard.squareDict[0].ycoord
-        self.mode = 'PLAY'
-        #REMINDER: Change the mode to intro, uncomment below 
-        #self.screenGroup.add(introScreen(12000,self))
+        self.mode = 'INTRO'
+        pygame.mixer.music.play()
+        self.screenGroup.add(introScreen(7000,self))
     if self.mode == 'PLAY':
       if self.turnPlayer==self.me.PID:
     #MAKE SURE THE DICE WORKS ACROSS MULTIPLE PLAYERS
@@ -82,6 +83,7 @@ class OfflineGame(PygameGame): #mimics game.py
             dice=self.diceGroup.sprites()[0]
             if code==pygame.K_SPACE:#don't interfere with other dice 
                 print('you rolled a %d!' %(dice.value%6+1))
+                c.BOXINGSOUND.play(maxtime=500)
                 self.movesLeft=(dice.value%6+1)
                 msg='playerRolled %d \n'%(dice.value)                
                 self.screenGroup.add(diceScreen(1000,self,dice.value))
@@ -134,7 +136,8 @@ class OfflineGame(PygameGame): #mimics game.py
       if self.mode == 'SELECTION': 
         if 60<= x and x<=395 and 210<=y and y<= 270:
           self.mode ='INTRO'
-          self.screenGroup.add(introScreen(12000,self)) 
+          self.screenGroup.add(introScreen(7000,self))
+          pygame.mixer.music.play() 
         elif 690<= x and x<= 1130 and 210<=y and y<= 270: 
           print('making board')
           self.mode = 'MAKEBOARD'

@@ -125,16 +125,9 @@ class BlueSquare(Square):
     boardWidth,outerGame,dic=None):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,Square.blueSquare,outerGame,dic)
-    '''def tap(self,piece,game,moves):
-        if moves==1:
-            piece.beans+=1'''
     def tap(self,piece,game,moves):
-        return##REMINDER TO CHANGE THIS 
-        if moves == 0:
-            if game.gonnaBeTurn%2==0:
-                game.mode='MEMORYGAME'
-            else:
-                game.mode='BOOPGAME'
+        if moves==1:
+            piece.beans+=1
 class RedSquare(Square): 
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame,dic=None):
@@ -161,7 +154,6 @@ class MiniGameSquare(Square):
     def tap(self,piece,game,moves):
         if moves == 0:
             game.mode='BOOPGAME'
-
 class MushroomSquare(Square):
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame):

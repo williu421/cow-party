@@ -87,6 +87,7 @@ class Game(PygameGame): #mimics game.py
             dice=self.diceGroup.sprites()[0]
             if code==pygame.K_SPACE:#don't interfere with other dice 
                 print('you rolled a %d!' %(dice.value%6+1))
+                c.BOXINGSOUND.play()
                 self.movesLeft=(dice.value%6+1)
                 msg='playerRolled %d \n'%(dice.value)                
                 self.screenGroup.add(diceScreen(1000,self,dice.value))
