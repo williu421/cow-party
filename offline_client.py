@@ -6,7 +6,7 @@ from Pieces import Piece
 from pygamegame import PygameGame
 from Square import Square 
 import random
-from Board import Board 
+from Board import * 
 from displayMessage import *
 from OfflineBoopGame import *
 from Dice import Dice 
@@ -24,6 +24,9 @@ class OfflineGame(PygameGame): #mimics game.py
   def modeList():
     return ['PLAY','BOOPGAME','MEMORYGAME']
   def init(self):
+    OfflineGame.selectionScreen=pygame.transform.scale(
+            pygame.image.load('images/selectionScreen.jpg').convert_alpha(),
+            (self.width, self.height))
     OfflineGame.startScreen=pygame.transform.scale(
             pygame.image.load('images/startScreen.jpg').convert_alpha(),
             (self.width, self.height))
@@ -31,11 +34,11 @@ class OfflineGame(PygameGame): #mimics game.py
             pygame.image.load('images/cowBackground.jpg').convert_alpha(),
             (self.width, self.height))
     setUpGame(self)
-    self.mode = 'PLAY'
-    ##REMINDER: CHANGE^ TO INTRO and uncomment below: 
+    self.mode = 'SELECTION' 
+    ##REMINDER:/ CHANGE^ TO INTRO/ and uncomment below: 
     #self.screenGroup.add(introScreen(12000,self)) 
     self.me.PID= 'Player1'  
-    self.namesDict['Player1'] = input('please enter your name\n')
+    self.namesDict['Player1'] = 'bob' #input('please enter your name\n') REMINDER: UNCOMMENT THIS
     self.piecesDict['Player1'] = self.me
     self.bot = Piece("Player2",14,14,False)
     self.piecesDict['Player2']  = self.bot 
@@ -48,6 +51,28 @@ class OfflineGame(PygameGame): #mimics game.py
     if self.displayMessage:
       if code == pygame.K_k:
         self.displayMessage=False
+    if self.mode == 'MAKEBOARD': 
+      if code == pygame.K_h:#help screen 
+            #REMINDER: copy this over to online client 
+            self.message = ["When making the custom board, use 'B','R','M' to toggle",
+                            "between blue, red, and minigame squares.",
+                            "Use your mouse to place the squares IN THE ORDER YOU TO MOVE IN",
+                            "Press 'D' when you're done!"
+                            "Press 'K' to exit this screen",]
+            self.displayMessage=True
+      if code == pygame.K_b:
+        self.makeMode = BlueSquare
+      elif code == pygame.K_r:
+        self.makeMode = RedSquare
+      elif code == pygame.K_m:
+        self.makeMode = MiniGameSquare
+      elif code == pygame.K_d:
+        for piece in self.PieceGroup: 
+          piece.xgrid = self.gameBoard.squareDict[0].xcoord
+          piece.ygrid = self.gameBoard.squareDict[0].ycoord
+        self.mode = 'PLAY'
+        #REMINDER: Change the mode to intro, uncomment below 
+        #self.screenGroup.add(introScreen(12000,self))
     if self.mode == 'PLAY':
       if self.turnPlayer==self.me.PID:
     #MAKE SURE THE DICE WORKS ACROSS MULTIPLE PLAYERS
@@ -74,9 +99,15 @@ class OfflineGame(PygameGame): #mimics game.py
               fork.moveOn(self.me,self)
           msg='' #don't want to send message twice 
       if code == pygame.K_h:#help screen 
+            #REMINDER: copy this over to online client 
             self.message = ['Welcome to Cow Party! ',
-                            "This is the help screen!",
-                            "Press 'k' to continue"]
+                            "On your turn, press the spacebar to roll the die",
+                            "Your piece does different things based on the square you land on",
+                            'Blue squares increase your bean count',
+                            'Red squares decrease your bean count', 
+                            'Special minigame squares start up games',
+                            'Games are also played at the end of every turn',
+                            'The player with the most beans at the end of the game wins!']
             self.displayMessage=True
   def timerFired(self,dt):
     if self.mode == 'INTRO':
@@ -99,8 +130,29 @@ class OfflineGame(PygameGame): #mimics game.py
       len(self.screenGroup)==0 and len(self.diceGroup)==0 and not self.isFork:
         print('about to movecheck')
         moveCheck(self,dt)
+  def mousePressed(self,x,y):
+      if self.mode == 'SELECTION': 
+        if 60<= x and x<=395 and 210<=y and y<= 270:
+          self.mode ='INTRO'
+          self.screenGroup.add(introScreen(12000,self)) 
+        elif 690<= x and x<= 1130 and 210<=y and y<= 270: 
+          print('making board')
+          self.mode = 'MAKEBOARD'
+          self.makeMode = BlueSquare
+          self.gameBoard = CustomBoard(self.height,self.width,15,15,self) 
+      elif self.mode == 'MAKEBOARD': 
+        makeBoardMouseHelper(self,x,y)
   def redrawAll(self,screen):
-      #draw everything as same color? 
+      #draw everything as same color?
+      if self.mode == 'MAKEBOARD':
+        drawBlankGrid(self,screen)
+      if self.mode == 'SELECTION': 
+        screen.blit(OfflineGame.selectionScreen,(0,0))
+        Text('Welcome to the offline mode!',c.GAMEWIDTH//2,c.GAMEHEIGHT//8,c.TEXTFONT,c.TEXTCOLOR,80).draw(screen)
+        Text('PLAY VS AI',c.GAMEWIDTH//5,c.GAMEHEIGHT//3,c.TEXTFONT,c.TEXTCOLOR,70).draw(screen)
+        Text('CUSTOM BOARD',c.GAMEWIDTH*4//5,c.GAMEHEIGHT//3,c.TEXTFONT,c.TEXTCOLOR,70).draw(screen)
+        pygame.draw.rect(screen,c.TEXTCOLOR,(60,210,395-60,270-210),5)
+        pygame.draw.rect(screen,c.TEXTCOLOR,(690,210,1130-690,270-210),5)
       if self.mode=='INTRO':
         self.screenGroup.draw(screen)
         for userScreen in self.screenGroup:

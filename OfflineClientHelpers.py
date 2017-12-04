@@ -1,9 +1,9 @@
 import pygame
 from Pieces import Piece
 from pygamegame import PygameGame
-from Square import Square 
+from Square import * 
 import random
-from Board import Board 
+from Board import * 
 from displayMessage import displayMessage
 from boopGame import boopGame
 from Dice import Dice 
@@ -54,7 +54,29 @@ def setUpGame(self):
     self.screenGroup=pygame.sprite.Group() 
     #for screens that stop the flow of the game 
 
-
+def makeBoardMouseHelper(self,x,y): 
+    for row in range(15):
+        for col in range(15):
+            if col*c.CELLWIDTH <= x and x<= col*c.CELLWIDTH+c.CELLWIDTH and \
+            row*c.CELLHEIGHT <= y and y<= row*c.CELLHEIGHT+c.CELLHEIGHT:
+                self.gameBoard.mkSq(self.makeMode,row,col,self.gameBoard.squareDict)
+                print('made square')
+                return 
+def drawBlankGrid(self,screen):
+    for square in self.gameBoard.squareDict.values():
+        if isinstance(square,BlueSquare): 
+            pygame.draw.rect(screen,(0,0,255),(square.xcoord*c.CELLWIDTH,square.ycoord*c.CELLHEIGHT,
+            c.CELLWIDTH,c.CELLHEIGHT),0)
+        elif isinstance(square,RedSquare): 
+            pygame.draw.rect(screen,(255,0,0),(square.xcoord*c.CELLWIDTH,square.ycoord*c.CELLHEIGHT,
+            c.CELLWIDTH,c.CELLHEIGHT),0)
+        elif isinstance(square,MiniGameSquare):
+            pygame.draw.rect(screen,(0,255,0),(square.xcoord*c.CELLWIDTH,square.ycoord*c.CELLHEIGHT,
+            c.CELLWIDTH,c.CELLHEIGHT),0)
+    for row in range(15):
+        for col in range(15): 
+            pygame.draw.rect(screen,(0,0,0),(col*c.CELLWIDTH,row*c.CELLHEIGHT,
+            c.CELLWIDTH,c.CELLHEIGHT),5)
 def nextTurn(self): #when one turn is over 
     makeNewTurn=True 
     for PID in sorted(self.piecesDict.keys()):

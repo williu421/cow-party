@@ -108,5 +108,26 @@ class Board(object):
         mkSq(MiniGameSquare,14,1)
         mkSq(BlueSquare,14,2)
 
+class CustomBoard(Board):
+    mar=4/5
+    def __init__(self,gameHeight,gameWidth,colNum,rowNum,outerGame):
+        Board.cols,Board.rows=colNum,rowNum
+        Board.boardWidth,Board.boardHeight=gameWidth*Board.mar,gameHeight*Board.mar
+        Board.cellWidth=Board.boardWidth/colNum
+        Board.cellHeight=Board.boardHeight/rowNum
+        Square.init(gameHeight,gameWidth,colNum,rowNum,\
+        Board.cellHeight,Board.cellWidth)
+        self.board = [([0]*colNum) for _ in range(rowNum)]
+        self.squareGroup=pygame.sprite.Group()
+        self.outerGame=outerGame
+        self.squareDict = dict()
+        Board.ordTrack = 0 #counts what ordinal we're making
+    def mkSq(self,SqType,ygrid,xgrid,dict):
+            self.board[ygrid][xgrid]=SqType(ygrid,xgrid,\
+            Board.ordTrack,Board.rows,Board.cols,Board.boardHeight,Board.boardWidth,self.outerGame,dict)
+            self.squareGroup.add(self.board[ygrid][xgrid])
+            self.squareDict[self.ordTrack]=self.board[ygrid][xgrid]
+            Board.ordTrack+=1
+
 
 

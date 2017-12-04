@@ -28,7 +28,7 @@ class Square(GameObject):
         Square.startSquare=loadImage('images/startSpace.png')
         Square.forkSquare=loadImage('images/forkSpace.png')
     def __init__(self,ycoord,xcoord,ordinal,rows,cols,boardHeight,\
-    boardWidth,image,outerGame): #coords are the grid locations 
+    boardWidth,image,outerGame,ordDict=None): #coords are the grid locations 
         Square.margin = max(boardHeight,boardWidth)*1/10
         cellWidth=boardWidth/cols
         cellHeight=boardHeight/rows
@@ -41,21 +41,25 @@ class Square(GameObject):
         self.outerGame=outerGame
         self.ordinal=ordinal 
         Square.ordDict[self.ordinal]=self
+        self.BoardsOrdDict=ordDict
     def tap(self,piece,game,moves):#when piece passes on it 
         pass
     def getNext(self): #return y,x coords of the next square in line 
         #hardcord in some merges
-        if (self.ycoord,self.xcoord)==(13,8):
-            return 14,8
-        elif (self.ycoord,self.xcoord)==(13,6):
-            return 14,6
-        elif (self.ycoord,self.xcoord)==(14,12):
-            return 14,14
-        elif (self.ycoord,self.xcoord)==(3,6):
-            return 1,6
-        elif (self.ycoord,self.xcoord)==(14,2):
-            return 14,4
-        nextSq=Square.ordDict[(self.ordinal+1)%86]
+        if self.BoardsOrdDict==None:
+            if (self.ycoord,self.xcoord)==(13,8):
+                return 14,8
+            elif (self.ycoord,self.xcoord)==(13,6):
+                return 14,6
+            elif (self.ycoord,self.xcoord)==(14,12):
+                return 14,14
+            elif (self.ycoord,self.xcoord)==(3,6):
+                return 1,6
+            elif (self.ycoord,self.xcoord)==(14,2):
+                return 14,4
+            nextSq=Square.ordDict[(self.ordinal+1)%86]
+        else: 
+            nextSq=self.BoardsOrdDict[(self.ordinal+1)%len(self.BoardsOrdDict)]
         return nextSq.ycoord,nextSq.xcoord
 class BlankSquare(Square): 
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
@@ -118,9 +122,9 @@ class RightSquare(Square):
         piece.move(1,game)
 class BlueSquare(Square):
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
-    boardWidth,outerGame):
+    boardWidth,outerGame,dic=None):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
-    boardWidth,Square.blueSquare,outerGame)
+    boardWidth,Square.blueSquare,outerGame,dic)
     '''def tap(self,piece,game,moves):
         if moves==1:
             piece.beans+=1'''
@@ -133,9 +137,9 @@ class BlueSquare(Square):
                 game.mode='BOOPGAME'
 class RedSquare(Square): 
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
-    boardWidth,outerGame):
+    boardWidth,outerGame,dic=None):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
-    boardWidth,Square.redSquare,outerGame)
+    boardWidth,Square.redSquare,outerGame,dic)
     def tap(self,piece,game,moves):
         if moves == 0:
             piece.beans -= 3
