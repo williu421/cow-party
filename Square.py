@@ -169,8 +169,8 @@ class StartSquare(Square):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,Square.startSquare,outerGame)
     def tap(self,piece,game,moves):
-        a=TimedScreen(300,game,None,
-        self.outerGame.namesDict[self.PID]+"gets 3 beans for passing the start square",
-        False)
+        text=Text(self.outerGame.namesDict[piece.PID]+"gets 3 beans for passing the start square",
+        c.GAMEWIDTH//2,c.GAMEHEIGHT//2,'Impact',(51,0,102),50)
+        a=TimedScreen(700,game,None,[text],False)
         self.outerGame.screenGroup.add(a)
         piece.beans+=3

@@ -7,7 +7,7 @@ import collections
 import numpy 
 
 class TimedScreen(pygame.sprite.Sprite):
-    def __init__(self,time,game,color=None,textList=None,transition=False):
+    def __init__(self,time,game,color=None,TextList=None,transition=False):
         super().__init__()
         print('made TimedScreen', time)
         self.time=time
@@ -19,7 +19,7 @@ class TimedScreen(pygame.sprite.Sprite):
         if self.color==None: self.image.set_alpha(0) 
         else: self.image.fill(color)
         self.aliveTime=0
-        self.textList=textList
+        self.textList=TextList
         self.rect=self.image.get_rect()
         self.transition=transition
         self.alpha=0 

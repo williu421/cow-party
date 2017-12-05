@@ -14,9 +14,7 @@ from processMessage import processMessage
 #hostAddress=input("enter the host's IP address: \n")
 #HOST = str(hostAddress) # put your IP address here if playing  on multiple computers
 
-HOST='128.237.184.128'
-
-
+HOST='128.237.115.213'
 PORT = 50009
 BACKLOG=2
 #need to make sure host, port match the server 

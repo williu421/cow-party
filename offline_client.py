@@ -155,10 +155,22 @@ class OfflineGame(PygameGame): #mimics game.py
   def redrawAll(self,screen):
       #draw everything as same color?
       if self.mode == 'GAMEOVER':
+        score1=self.piecesDict['Player1'].beans
+        score2=self.piecesDict['Player2'].beans
         screen.blit(OfflineGame.endScreen,(0,0))
         a=Text("Game Over! Thanks for playing!",c.GAMEWIDTH//2,
         c.GAMEHEIGHT//2,'Arial Black',c.TEXTCOLOR,60)
         a.draw(screen)
+        if score1 > score2: 
+          b=Text("The winner was Player1",c.GAMEWIDTH//2,
+          c.GAMEHEIGHT*3//4,'Arial Black',c.TEXTCOLOR,60)
+        elif score2>score1: 
+          b=Text("The winner was Player2",c.GAMEWIDTH//2,
+          c.GAMEHEIGHT*3//4,'Arial Black',c.TEXTCOLOR,60)
+        elif score1==score2: 
+          b=Text("Tie game",c.GAMEWIDTH//2,
+          c.GAMEHEIGHT*3//4,'Arial Black',c.TEXTCOLOR,60)
+        b.draw(screen)
       if self.mode == 'MAKEBOARD':
         drawBlankGrid(self,screen)
       if self.mode == 'SELECTION': 

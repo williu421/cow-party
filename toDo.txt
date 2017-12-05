@@ -1,17 +1,17 @@
-Make more square subclasses
-    transition squares
-    update interactions 
-    
-minigames 
-    memory game 
-    pong 
+UI 
+    custom -> intro bug 
 
-auxiliary screens
-    intro screen
-    help screen
-    how to play 
-        controls 
-    end of game screen
+help screen
+    HAH??
+    NANI?? 
+
+squares
+    huh? 
+    coffee bean for cup
+    instructions on minigames
+
+more minigames 
+    
 
 
     
