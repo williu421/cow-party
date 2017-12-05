@@ -3,6 +3,8 @@ import math
 from GameObject import GameObject
 import random
 from boopGame import boopGame
+from TimedScreen import *
+import constants as c
 class Square(GameObject): 
     margin = 10
     ordDict=dict()
@@ -16,9 +18,6 @@ class Square(GameObject):
         Square.brownSquare = loadImage('images/brownSquare.png')
         Square.blank=loadImage('images/blank.png')
         Square.rightArrow=loadImage('images/rightArrow.png')
-        '''Square.leftArrow=loadImage('images/leftArrow.jpeg')
-        Square.upArrow=loadImage('images/upArrow.jpeg')
-        Square.downArrow=loadImage('images/downArrow.jpeg')'''
         Square.blueSquare=loadImage('images/blueSquare.png')
         Square.redSquare=loadImage('images/redSquare.png')
         Square.greenSquare=loadImage('images/greenSquare.png')
@@ -113,21 +112,15 @@ class ForkSquare(Square):
         newSq.tap(piece,game,1)
     def getNext(self):
         pass
-class RightSquare(Square):
-    def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
-    boardWidth,outerGame):
-        super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
-    boardWidth,Square.rightArrow,outerGame) 
-    def tap(self,piece,game):
-        piece.move(1,game)
 class BlueSquare(Square):
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame,dic=None):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,Square.blueSquare,outerGame,dic)
     def tap(self,piece,game,moves):
-        if moves==1:
+        if moves==0:
             piece.beans+=1
+            c.CHING.play()
 class RedSquare(Square): 
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame,dic=None):
@@ -138,6 +131,7 @@ class RedSquare(Square):
             piece.beans -= 3
             if piece.beans <= 0:
                 piece.beans=0
+            c.AWW.play()
 class GreenSquare(Square): 
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame):
@@ -147,13 +141,15 @@ class GreenSquare(Square):
         pass  
 class MiniGameSquare(Square):
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
-    boardWidth,outerGame):
+    boardWidth,outerGame,dic=None):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
-    boardWidth,Square.minigameSquare,outerGame)
-
+    boardWidth,Square.minigameSquare,outerGame,dic)
     def tap(self,piece,game,moves):
         if moves == 0:
-            game.mode='BOOPGAME'
+            if self.outerGame.gonnaBeTurn%2==0: 
+                game.mode='BOOPGAME'
+            else: 
+                game.mode = 'MEMORYGAME'
 class MushroomSquare(Square):
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame):
@@ -164,8 +160,17 @@ class BowserSquare(Square):
     boardWidth,outerGame):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,Square.bowserSquare,outerGame)
+    def tap(self,piece,game,moves):
+        if moves==0:
+            c.LAUGH.play()
 class StartSquare(Square): 
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,Square.startSquare,outerGame)
+    def tap(self,piece,game,moves):
+        a=TimedScreen(300,game,None,
+        self.outerGame.namesDict[self.PID]+"gets 3 beans for passing the start square",
+        False)
+        self.outerGame.screenGroup.add(a)
+        piece.beans+=3

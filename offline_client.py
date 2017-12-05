@@ -34,9 +34,12 @@ class OfflineGame(PygameGame): #mimics game.py
     OfflineGame.cowBackground=pygame.transform.scale(
             pygame.image.load('images/cowBackground.jpg').convert_alpha(),
             (self.width, self.height))
+    OfflineGame.endScreen=pygame.transform.scale(
+            pygame.image.load('images/santa.jpg').convert_alpha(),
+            (c.GAMEWIDTH,c.GAMEHEIGHT))
     setUpGame(self)
     self.mode = 'SELECTION' 
-    ##REMINDER:/ CHANGE^ TO INTRO/ and uncomment below: 
+    ##REMINDER: uncomment below: 
     #self.screenGroup.add(introScreen(12000,self)) 
     self.me.PID= 'Player1'  
     self.namesDict['Player1'] = 'bob' #input('please enter your name\n') REMINDER: UNCOMMENT THIS
@@ -74,6 +77,7 @@ class OfflineGame(PygameGame): #mimics game.py
         self.mode = 'INTRO'
         pygame.mixer.music.play()
         self.screenGroup.add(introScreen(7000,self))
+        self.mode = 'PLAY'
     if self.mode == 'PLAY':
       if self.turnPlayer==self.me.PID:
     #MAKE SURE THE DICE WORKS ACROSS MULTIPLE PLAYERS
@@ -135,9 +139,12 @@ class OfflineGame(PygameGame): #mimics game.py
   def mousePressed(self,x,y):
       if self.mode == 'SELECTION': 
         if 60<= x and x<=395 and 210<=y and y<= 270:
-          self.mode ='INTRO'
+          '''self.mode ='INTRO'
           self.screenGroup.add(introScreen(7000,self))
-          pygame.mixer.music.play() 
+          pygame.mixer.music.load('audio/main.mp3')
+          pygame.mixer.music.play() '''
+          self.mode = 'PLAY'#REMINDER: uncomment above and remove this line
+          
         elif 690<= x and x<= 1130 and 210<=y and y<= 270: 
           print('making board')
           self.mode = 'MAKEBOARD'
@@ -147,13 +154,18 @@ class OfflineGame(PygameGame): #mimics game.py
         makeBoardMouseHelper(self,x,y)
   def redrawAll(self,screen):
       #draw everything as same color?
+      if self.mode == 'GAMEOVER':
+        screen.blit(OfflineGame.endScreen,(0,0))
+        a=Text("Game Over! Thanks for playing!",c.GAMEWIDTH//2,
+        c.GAMEHEIGHT//2,'Arial Black',c.TEXTCOLOR,60)
+        a.draw(screen)
       if self.mode == 'MAKEBOARD':
         drawBlankGrid(self,screen)
       if self.mode == 'SELECTION': 
         screen.blit(OfflineGame.selectionScreen,(0,0))
-        Text('Welcome to the offline mode!',c.GAMEWIDTH//2,c.GAMEHEIGHT//8,c.TEXTFONT,c.TEXTCOLOR,80).draw(screen)
-        Text('PLAY VS AI',c.GAMEWIDTH//5,c.GAMEHEIGHT//3,c.TEXTFONT,c.TEXTCOLOR,70).draw(screen)
-        Text('CUSTOM BOARD',c.GAMEWIDTH*4//5,c.GAMEHEIGHT//3,c.TEXTFONT,c.TEXTCOLOR,70).draw(screen)
+        Text('Welcome to the offline mode!',c.GAMEWIDTH//2,c.GAMEHEIGHT//8,c.TEXTFONT,c.TEXTCOLOR,c.LARGEFONT).draw(screen)
+        Text('PLAY VS AI',c.GAMEWIDTH//5,c.GAMEHEIGHT//3,c.TEXTFONT,c.TEXTCOLOR,c.LARGEFONT).draw(screen)
+        Text('CUSTOM BOARD',c.GAMEWIDTH*4//5,c.GAMEHEIGHT//3,c.TEXTFONT,c.TEXTCOLOR,c.LARGEFONT).draw(screen)
         pygame.draw.rect(screen,c.TEXTCOLOR,(60,210,395-60,270-210),5)
         pygame.draw.rect(screen,c.TEXTCOLOR,(690,210,1130-690,270-210),5)
       if self.mode=='INTRO':

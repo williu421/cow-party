@@ -26,7 +26,7 @@ def setUpGame(self):
     #signals if there needs to be an overlay with a message on it 
     self.isFork=False #change to true if we're at a fork 
     self.gonnaBeTurn=1 #the turn that is about to happen
-    self.turnLimit=5
+    self.turnLimit=c.TURNLIMIT
     self.turnPlayer='Player1'  
     self.movesLeft=None#how many moves the turn player has left 
     self.currentMinigame=None #the actual instance of the current minigame 
