@@ -162,7 +162,16 @@ class BowserSquare(Square):
     boardWidth,Square.bowserSquare,outerGame)
     def tap(self,piece,game,moves):
         if moves==0:
-            c.LAUGH.play()
+            c.LAUGH.play(3)
+            piece.beans = 0
+            piece.coffee = 0
+            text1=Text('OH NO! You landed on a Bowser Square!',c.GAMEWIDTH//2,c.GAMEHEIGHT//2,
+            'Impact',(255,128,0),70)
+            text2=Text('HE STOLE EVERYTHING!!',c.GAMEWIDTH//2,c.GAMEHEIGHT//2+120,
+            'Impact',(255,128,0),70)
+            textList=[text1,text2]
+            a=TimedScreen(3000,game,None,textList,False)
+            game.screenGroup.add(a)
 class StartSquare(Square): 
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame):
@@ -171,6 +180,6 @@ class StartSquare(Square):
     def tap(self,piece,game,moves):
         text=Text(self.outerGame.namesDict[piece.PID]+"gets 3 beans for passing the start square",
         c.GAMEWIDTH//2,c.GAMEHEIGHT//2,'Impact',(51,0,102),50)
-        a=TimedScreen(700,game,None,[text],False)
+        a=TimedScreen(1200,game,None,[text],False)
         self.outerGame.screenGroup.add(a)
         piece.beans+=3

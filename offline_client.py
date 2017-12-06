@@ -25,18 +25,16 @@ class OfflineGame(PygameGame): #mimics game.py
   def modeList():
     return ['PLAY','BOOPGAME','MEMORYGAME']
   def init(self):
-    OfflineGame.selectionScreen=pygame.transform.scale(
-            pygame.image.load('images/selectionScreen.jpg').convert_alpha(),
+    def imageLoad(path):
+      return pygame.transform.scale(
+            pygame.image.load(path).convert_alpha(),
             (self.width, self.height))
-    OfflineGame.startScreen=pygame.transform.scale(
-            pygame.image.load('images/startScreen.jpg').convert_alpha(),
-            (self.width, self.height))
-    OfflineGame.cowBackground=pygame.transform.scale(
-            pygame.image.load('images/cowBackground.jpg').convert_alpha(),
-            (self.width, self.height))
-    OfflineGame.endScreen=pygame.transform.scale(
-            pygame.image.load('images/santa.jpg').convert_alpha(),
-            (c.GAMEWIDTH,c.GAMEHEIGHT))
+    OfflineGame.selectionScreen=imageLoad('images/selectionScreen.jpg')
+    OfflineGame.startScreen=imageLoad('images/startScreen.jpg')
+    OfflineGame.marioMap=imageLoad('images/marioMap.jpg')
+    OfflineGame.woodBackground=imageLoad('images/Background.jpg')
+    OfflineGame.cowBackground=imageLoad('images/cowBackground.jpg')
+    OfflineGame.endScreen=imageLoad('images/santa.jpg')
     setUpGame(self)
     self.mode = 'SELECTION' 
     ##REMINDER: uncomment below: 
@@ -53,7 +51,7 @@ class OfflineGame(PygameGame): #mimics game.py
       pprint(vars(self))
     print('mode is: ',self.mode)
     if self.displayMessage:
-      if code == pygame.K_k:
+      if code == pygame.K_h:
         self.displayMessage=False
     if self.mode == 'MAKEBOARD': 
       if code == pygame.K_h:#help screen 
@@ -77,7 +75,6 @@ class OfflineGame(PygameGame): #mimics game.py
         self.mode = 'INTRO'
         pygame.mixer.music.play()
         self.screenGroup.add(introScreen(7000,self))
-        self.mode = 'PLAY'
     if self.mode == 'PLAY':
       if self.turnPlayer==self.me.PID:
     #MAKE SURE THE DICE WORKS ACROSS MULTIPLE PLAYERS
@@ -185,23 +182,29 @@ class OfflineGame(PygameGame): #mimics game.py
         for userScreen in self.screenGroup:
           userScreen.drawText(screen)
       if self.mode in OfflineGame.modeList(): 
-        screen.blit(OfflineGame.cowBackground,(0,0))
+        screen.blit(OfflineGame.woodBackground,(0,0))
         self.gameBoard.squareGroup.draw(screen)
-        self.PieceGroup.draw(screen)
+        if (self.piecesDict['Player1'].xgrid!=self.piecesDict['Player2'].xgrid) or \
+        (self.piecesDict['Player1'].ygrid != self.piecesDict['Player2'].ygrid):
+          #basically when the players are on the same square
+          self.PieceGroup.draw(screen)
+          for Piece in self.PieceGroup:
+            Piece.drawName(self,screen)
+        else: 
+          self.meGroup.draw(screen)
+          self.me.drawName(self,screen)
         self.diceGroup.draw(screen)
         self.screenGroup.draw(screen)
         for userScreen in self.screenGroup:
           userScreen.drawText(screen)
-        for Piece in self.PieceGroup:
-            Piece.drawName(self,screen)
         drawBeansAndCoffee(self,screen,0,0,'Player1')
-        drawBeansAndCoffee(self,screen,self.width-150,self.height//30,'Player2')
+        drawBeansAndCoffee(self,screen,self.width-120,0,'Player2')
        # drawBeansAndCoffee(self,screen,self.width-150,self.height//30,'Player2')
         if self.movesLeft!=None:
-          Text('movesLeft: %d' %(self.movesLeft),
-          100,self.height//4,c.TEXTFONT,c.TEXTCOLOR,c.PLAYSIZE).draw(screen)
+          Text('Moves Left: %d' %(self.movesLeft),
+          100,self.height//4,c.TEXTFONT,(255,0,0),c.PLAYSIZE).draw(screen)
           Text('Turns Done: %d' %(self.gonnaBeTurn-1),
-          100,self.height//4+60,c.TEXTFONT,c.TEXTCOLOR,c.PLAYSIZE).draw(screen)
+          100,self.height//4+150,c.TEXTFONT,(255,0,0),c.PLAYSIZE).draw(screen)
       if self.mode=='LOBBY': 
           screen.blit(OfflineGame.startScreen,(0,0))
           inc = 0
@@ -217,5 +220,5 @@ class OfflineGame(PygameGame): #mimics game.py
 
 
 
-mygame=OfflineGame(1920*3//5,1200*3//5)
+mygame=OfflineGame(c.GAMEWIDTH,c.GAMEHEIGHT)
 mygame.run()

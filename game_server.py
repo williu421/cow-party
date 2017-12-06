@@ -7,8 +7,9 @@
 import socket
 import threading
 from queue import Queue
+import constants as c 
 
-HOST = "128.237.115.213" # put your IP address here if playing on multiple computers
+HOST = c.IP # put your IP address here if playing on multiple computers
 
 PORT = 50009 #kind of like the channel, change it around if things aren't working maybe 
 BACKLOG = 2 #the number of people that can join 

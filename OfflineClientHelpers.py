@@ -17,7 +17,7 @@ def setUpGame(self):
     cols,rows=15,15
     self.gameBoard = Board(self.height,self.width,cols,rows,self) 
     #uses the Board class 
-    self.bgColor=(102,255,255) 
+    self.bgColor=c.BGCOLOR
     self.mode='LOBBY'  #LOBBY, PLAY 
     self.myfont=pygame.font.SysFont(c.TEXTFONT , c.PLAYSIZE)
     self.message = '' #for displayMessage
@@ -38,10 +38,12 @@ def setUpGame(self):
     self.otherStrangers=dict() #keeps track of every other player
     self.minigameScores=[] #list of dicts that track the scores of the players 
 
-    self.PieceGroup=pygame.sprite.Group() 
+    self.PieceGroup=pygame.sprite.Group()
+    self.meGroup=pygame.sprite.Group() 
     #use Pygame's Group to update all pieces simultaneously 
     self.me= Piece("lonely",14,14,True) #last parameter says it's me 
     self.PieceGroup.add(self.me)
+    self.meGroup.add(self.me)
     self.diceGroup=pygame.sprite.Group()
 
     self.screenGroup=pygame.sprite.Group()
@@ -120,17 +122,17 @@ def drawBeansAndCoffee(outerGame,screen,x,y,PID):
     piece=outerGame.piecesDict[PID]
     nameFont=pygame.font.SysFont(c.TEXTFONT , c.PLAYSIZE)
     namesText=nameFont.render('%s' \
-    %(outerGame.namesDict[PID]),False,c.TEXTCOLOR)
-    screen.blit(namesText,(x,y))
+    %(outerGame.namesDict[PID]),False,(255,0,0))
+    screen.blit(namesText,(x+30,y))
 
-    screen.blit(Piece.beanImage,(x,y+50))
+    screen.blit(Piece.beanImage,(x,y+30))
     namesText=nameFont.render('x %d' \
-        %(piece.beans),False,c.TEXTCOLOR )
+        %(piece.beans),False,(255,0,0))
     screen.blit(namesText,(x+60,y+50))
 
-    screen.blit(Piece.coffeeImage,(x,y+100))
+    screen.blit(Piece.coffeeImage,(x,y+80))
     namesText=nameFont.render('x %d' \
-    %(piece.coffee),False,c.TEXTCOLOR )
-    screen.blit(namesText,(x+60,y+100))
+    %(piece.coffee),False,(255,0,0) )
+    screen.blit(namesText,(x+60,y+110))
 
     

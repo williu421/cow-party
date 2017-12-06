@@ -9,7 +9,9 @@ CELLHEIGHT=GAMEHEIGHT//15
 SQUAREMARGIN = GAMEWIDTH*1/10 
 LARGEFONT = 50
 TURNLIMIT = 10
-
+IP='128.237.189.207'
+INTROFONT = 'Courier New Bold'
+BGCOLOR = (0,255,255)
 import pygame
 pygame.mixer.init()
 pygame.mixer.music.load('audio/main.mp3')

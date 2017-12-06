@@ -170,8 +170,7 @@ class OfflineMemoryGame(PygameGame):
                 self.mode='FINISHED'
         if self.mode=='FINISHED' and len(self.screenGroup)==0:
             self.playing=False
-            self.outerGame.mode='PLAY'       
-        keysDown=self.isKeyPressed
+            self.outerGame.mode='PLAY'  
     def redrawAll(self,screen):
         if len(self.screenGroup)>0:
             self.screenGroup.draw(screen)

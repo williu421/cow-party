@@ -5,7 +5,7 @@ from pygame.surfarray import *
 from pygame.locals import *
 import collections
 import numpy 
-
+import constants as c
 class TimedScreen(pygame.sprite.Sprite):
     def __init__(self,time,game,color=None,TextList=None,transition=False):
         super().__init__()
@@ -58,9 +58,7 @@ class introScreen(TimedScreen):
         self.rect=self.image.get_rect()
         self.image.set_alpha(255)
         self.currPrint=0
-        self.TextQueue=collections.deque(list("In a world of farm animals...\nyou are a cow...\nyou must defeat the alpaca.\n \
-        Rules: press the space bar on your turn to roll the die.\n\
-        Do as the minigames say, and you will be victorious."))
+        self.TextQueue=collections.deque(list("In a world of farm animals...\nyou are a cow...\nyou must defeat the alpaca.\nRules: press the space bar on your turn to roll.\nPress 'h' at any time to view the help screen."))
         self.textLength=len(self.TextQueue)
         self.leftSide=self.width//2-200 #left margin of text
         self.charInc=0
@@ -76,7 +74,7 @@ class introScreen(TimedScreen):
         self.alpha+=(255/self.time)*(dt)
         self.image.set_alpha(self.alpha) 
         self.fires+=1
-        kernel=15
+        kernel=20
         spacing=65
         fontColor=(255,128,0)
         if self.charTime>=(self.time/self.textLength):
@@ -86,10 +84,10 @@ class introScreen(TimedScreen):
                     self.lineInc+=1
                     self.charInc=0
                     self.drawList.append(Text(self.TextQueue.popleft(),\
-                    self.width//3-200+self.charInc*kernel,self.height//3+self.lineInc*spacing,"Arial Bold",fontColor,40))
+                    self.width//3-200+self.charInc*kernel,self.height//3+self.lineInc*spacing,c.INTROFONT,fontColor,40))
                 else:
                     self.drawList.append(Text(char,
-                    self.width//3-200+self.charInc*kernel,self.height//3+self.lineInc*spacing,"Arial Bold",fontColor,40))
+                    self.width//3-200+self.charInc*kernel,self.height//3+self.lineInc*spacing,c.INTROFONT,fontColor,40))
             self.charInc+=1
             self.charTime-=(self.time/self.textLength)
     def drawText(self,screen):

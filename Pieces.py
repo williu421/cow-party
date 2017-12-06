@@ -19,11 +19,13 @@ class Piece(GameObject):
         def imageLoad(imagePath):
             return pygame.transform.rotate(pygame.transform.scale(
             pygame.image.load(imagePath).convert_alpha(),
-            (60, 60)), 0)
-        Piece.cowImage = imageLoad('images/cow.jpeg')
-        Piece.squidImage=imageLoad('images/Alpaca.png')
+            (60,60)),0)
+        Piece.cowImage = imageLoad('images/cow.png')
+        Piece.squidImage=pygame.transform.rotate(pygame.transform.scale(
+            pygame.image.load('images/Alpaca.png').convert_alpha(),
+            (100,100)),0)
         Piece.beanImage=imageLoad('images/bean.png')
-        Piece.coffeeImage=imageLoad('images/coffee.jpeg')
+        Piece.coffeeImage=imageLoad('images/coffee.png')
     def __init__(self, PID, xgrid, ygrid,isMe,beans=0,coffee=0):
         xpoint=Square.margin+(xgrid+1/2)*Board.cellWidth
         ypoint=Square.margin+(ygrid+1/2)*Board.cellHeight

@@ -1,6 +1,3 @@
-UI 
-    custom -> intro bug 
-
 help screen
     HAH??
     NANI?? 
@@ -11,7 +8,19 @@ squares
     instructions on minigames
 
 more minigames 
-    
+    penalty for hitting the poop
+    intro to minigames
+
+UI/UX
+    remove white png backgrounds
+    move bean up a lil
+    intro- include each square
+    movesleft, turnsdone not over board
+    passing start message better 
+    game over screen text color change 
+    weird border problem 
+    custom color schemes 
+
 
 
     

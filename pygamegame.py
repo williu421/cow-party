@@ -59,7 +59,7 @@ class PygameGame(object):
         self.title = title
         self.bgColor = (0, 0, 0)
         self.needUserInput=False 
-        self.standbyColor= (255,0,127)
+        self.standbyColor= (0,0,0)
         self.isOuter=isOuter
         pygame.init()
 

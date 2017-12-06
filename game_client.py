@@ -11,10 +11,11 @@ import socket
 import threading
 from queue import Queue #should be 'from Queue import Queue if python2.x 
 from processMessage import processMessage 
+import constants as c
 #hostAddress=input("enter the host's IP address: \n")
 #HOST = str(hostAddress) # put your IP address here if playing  on multiple computers
 
-HOST='128.237.115.213'
+HOST=c.IP
 PORT = 50009
 BACKLOG=2
 #need to make sure host, port match the server 
@@ -74,7 +75,7 @@ class Game(PygameGame): #mimics game.py
     msg=''
     print('mode is: ',self.mode)
     if self.displayMessage:
-      if code == pygame.K_k:
+      if code == pygame.K_h:
         self.displayMessage=False
     if self.mode == 'PLAY':
       if self.turnPlayer==self.me.PID:
@@ -171,9 +172,8 @@ class Game(PygameGame): #mimics game.py
           screen.blit(Game.startScreen,(0,0))
           inc = 0
           for playerID in self.namesDict:
-              namesText=self.myfont.render('%s name: %s' \
-              %(playerID,self.namesDict[playerID]),False,(128,255,0))
-              screen.blit(namesText,(self.width/10,self.height/10+inc))
+              Text('%s name: %s'%(playerID,self.namesDict[playerID]),self.width//3,self.height//10+inc,'Impact',
+              c.TEXTCOLOR,70).draw(screen)
               inc += self.width/5 
       if self.displayMessage:
         displayMessage(screen,self.width/2,self.height/2,self.message,self.width,self.height) 
@@ -185,4 +185,4 @@ threading.Thread(target = handleServerMsg, args = (server, serverMsg)).start()
 
 #run(200, 200, serverMsg, server)
 
-Game(1920*3//5,1200*3//5,serverMsg,server).run()
+Game(c.GAMEWIDTH,c.GAMEHEIGHT,serverMsg,server).run()

@@ -17,7 +17,7 @@ def setUpGame(self):
     cols,rows=15,15
     self.gameBoard = Board(self.height,self.width,cols,rows,self) 
     #uses the Board class 
-    self.bgColor=(102,255,255) 
+    self.bgColor=c.BGCOLOR 
     self.mode='LOBBY'  #LOBBY, PLAY 
     self.myfont=pygame.font.SysFont(c.TEXTFONT , c.PLAYSIZE)
     self.message = '' #for displayMessage
@@ -88,7 +88,7 @@ def moveCheck(self,dt):
 def drawBeansAndCoffee(outerGame,screen,x,y,PID): 
     #draws the beans and coffee, duh
     piece=outerGame.piecesDict[PID]
-    nameFont=pygame.font.Sysfont(c.TEXTFONT , c.PLAYSIZE)
+    nameFont=pygame.font.SysFont(c.TEXTFONT , c.PLAYSIZE)
     namesText=nameFont.render('%s' \
     %(outerGame.namesDict[PID]),False,c.TEXTCOLOR)
     screen.blit(namesText,(x,y))
