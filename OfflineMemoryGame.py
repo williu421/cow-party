@@ -25,7 +25,7 @@ class OfflineMemoryGame(PygameGame):
         self.needUserInput=False
         self.bgColor = (102,204,0)
         self.isOuter=False
-        self.timeCounter=10000 #milliseconds 
+        self.timeCounter=15000 #milliseconds 
         self.mode='INTRO' #switch between intro and play 
         self.ready=False
         self.otherReady=False

@@ -12,7 +12,9 @@ import constants as c
 pygame.init()
 pygame.font.init()
 pygame.display.set_mode((1,1), pygame.NOFRAME)
-
+abstractOrange=pygame.transform.scale(
+            pygame.image.load('images/abstractOrange.png').convert_alpha(),
+            (c.GAMEWIDTH+30, c.GAMEHEIGHT+30))
 class memoryGame(PygameGame): 
     def __init__(self, width, height, outerGame,serverMsg=None, server=None, fps=50, title="memoryGame"):
         self.outerGame=outerGame
@@ -26,7 +28,7 @@ class memoryGame(PygameGame):
         self.bgColor = (102,204,0)
         self.isOuter=False
         self.timeCounter=15000 #milliseconds 
-        self.mode='PLAY' #switch between intro and play 
+        self.mode='INTRO' #switch between intro and play 
         self.ready=False
         self.otherReady=False
         self.screenGroup=pygame.sprite.Group()
@@ -44,12 +46,15 @@ class memoryGame(PygameGame):
             return pygame.transform.scale(
             pygame.image.load(imagePath).convert_alpha(),
             (200, 200))
+        memoryGame.background=pygame.transform.scale(
+            pygame.image.load('images/memoryGameBackground.png').convert_alpha(),
+            (c.GAMEWIDTH+30, c.GAMEHEIGHT+30))
         memoryGame.cow1=imageLoad('images/cow1.png') #image from clip art 
         memoryGame.milk=imageLoad('images/milk.png') #from clip art 
         memoryGame.poop=imageLoad('images/poop.png')
         memoryGame.grass=imageLoad('images/grass.png')
         memoryGame.brownCow=imageLoad('images/brownCow.png')
-        memoryGame.door=imageLoad('images/door.jpg')
+        memoryGame.door=imageLoad('images/door.png')
     
     def initGrid(self): #get a random grid of images
         grid=((memoryGame.cow1,memoryGame.cow1,memoryGame.milk),
@@ -108,9 +113,9 @@ class memoryGame(PygameGame):
                 if self.otherReady:
                     self.mode='PLAY'
     def mousePressed(self,x,y):
-        print('mousepressed at: ',x,y)
+        if self.mode == 'INTRO':
+            return 
         coords = self.mouseHelper(x,y,self.gameGrid)
-        print('coords returns', coords)
         if coords != None: 
             row,col=coords 
             if self.show == None: 
@@ -198,6 +203,7 @@ class memoryGame(PygameGame):
                 print(e)
             self.serverMsg.task_done()
     def redrawAll(self,screen):
+        screen.blit(abstractOrange,(0,0))
         if len(self.screenGroup)>0:
             self.screenGroup.draw(screen)
             for userScreen in self.screenGroup:
@@ -209,7 +215,10 @@ class memoryGame(PygameGame):
             self.width//2,self.height//2,'Arial Bold',(0,0,0),40).draw(screen)
             Text("Match as many as you can before time is out!",
             self.width//2,self.height//2+40,'Arial Bold',(0,0,0),40).draw(screen)
+            Text("Press 'a' when you're ready!",
+            self.width//2,self.height//2+80,'Arial Bold',(0,0,0),40).draw(screen)
         if self.mode=='PLAY':
+            screen.blit(OfflineMemoryGame.background,(0,0))
             self.drawGrid(self.displayGrid,screen)
             Text("Time left: %d" %((self.timeCounter)//1000),
                 self.width//10,self.height//10,'Arial Bold',(153,51,255),40).draw(screen)

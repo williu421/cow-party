@@ -23,6 +23,7 @@ from clientHelpers import *
 from TimedScreen import *
 from pprint import pprint 
 from memoryGame import memoryGame
+from hullGame import *
 pygame.font.init()
 
 
@@ -48,15 +49,24 @@ def handleServerMsg(server, serverMsg):
 class Game(PygameGame): #mimics game.py 
   @staticmethod
   def modeList():
-    return ['PLAY','BOOPGAME','MEMORYGAME']
+    return ['PLAY','BOOPGAME','MEMORYGAME','HULLGAME']
   def init(self):
-    Game.startScreen=pygame.transform.scale(
-            pygame.image.load('images/startScreen.jpg').convert_alpha(),
-            (self.width, self.height))
-    Game.cowBackground=pygame.transform.scale(
-            pygame.image.load('images/cowBackground.jpg').convert_alpha(),
-            (self.width, self.height))
+    def imageLoad(path):
+      return pygame.transform.scale(
+            pygame.image.load(path).convert_alpha(),
+            (c.GAMEWIDTH+30, c.GAMEHEIGHT+30))
+    Game.selectionScreen=imageLoad('images/selectionScreen.jpg')
+    Game.redBackground=imageLoad('images/redBackground.png')
+    Game.startScreen=imageLoad('images/startScreen.jpg')
+    Game.woodBackground=imageLoad('images/Background.jpg')
+    Game.cowBackground=imageLoad('images/cowBackground.jpg')
+    Game.endScreen=imageLoad('images/santa.jpg')
+    Game.cartoonBackground=imageLoad('images/cartoonBackground.jpg')
+    Game.blueLightBackground=imageLoad('images/blueLightBackground.jpg')
+    Game.customizeBackground=imageLoad('images/customizeBackground.jpg')
+    Game.abstractOrange=imageLoad('images/abstractOrange.png')
     setUpGame(self)
+    self.mode = 'LOBBY'   
   def keyPressed(self,code,mod):
     if code == pygame.K_9: #for debugging 
       pprint(vars(self))
@@ -65,6 +75,7 @@ class Game(PygameGame): #mimics game.py
     if self.displayMessage:
       if code == pygame.K_h:
         self.displayMessage=False
+        return 
     if self.mode == 'PLAY':
       if self.turnPlayer==self.me.PID:
         if len(self.diceGroup.sprites())>0:
@@ -72,7 +83,7 @@ class Game(PygameGame): #mimics game.py
             dice=self.diceGroup.sprites()[0]
             if code==pygame.K_SPACE:#don't interfere with other dice 
                 print('you rolled a %d!' %(dice.value%6+1))
-                c.BOXINGSOUND.play()
+                c.BOXINGSOUND.play(maxtime=500)
                 self.movesLeft=(dice.value%6+1)
                 msg='playerRolled %d \n'%(dice.value)                
                 self.screenGroup.add(diceScreen(1000,self,dice.value))
@@ -95,8 +106,13 @@ class Game(PygameGame): #mimics game.py
           msg='' #don't want to send message twice 
       if code == pygame.K_h:#help screen 
             self.message = ['Welcome to Cow Party! ',
-                            "This is the help screen!",
-                            "Press 'k' to continue"]
+                            "On your turn, press the spacebar to roll the die",
+                            "Your piece does different things based on the square you land on",
+                            'Blue squares increase your bean count',
+                            'Red squares decrease your bean count', 
+                            'Special minigame squares start up games',
+                            'Games are also played at the end of every turn',
+                            'The player with the most beans at the end of the game wins!']
             self.displayMessage=True
       # send the message to other players!
       if (msg != ""):
@@ -110,18 +126,19 @@ class Game(PygameGame): #mimics game.py
       self.diceGroup.update(dt)
       self.PieceGroup.update(dt,self.isKeyPressed,self.width,self.height,self.server)
       if self.mode == 'BOOPGAME' and len(self.screenGroup)==0:
-        print('testing boopGame')    
         self.currentMinigame=boopGame(1920*3//5,1200*3//5,self)
         self.minigameScores.append(dict())
         self.currentMinigame.run()
-      elif self.mode == 'MEMORYGAME' and len(self.screenGroup)==0:
-        print('testing memoryGame')    
+      elif self.mode == 'MEMORYGAME' and len(self.screenGroup)==0: 
         self.currentMinigame=memoryGame(1920*3//5,1200*3//5,self)
+        self.minigameScores.append(dict())
+        self.currentMinigame.run()
+      elif self.mode == 'HULLGAME' and len(self.screenGroup)==0:   
+        self.currentMinigame=hullGame(1920*3//5,1200*3//5,self)
         self.minigameScores.append(dict())
         self.currentMinigame.run()
       elif self.mode == 'PLAY' and\
       len(self.screenGroup)==0 and len(self.diceGroup)==0 and not self.isFork:
-        print('about to movecheck')
         moveCheck(self,dt)
     while (self.serverMsg.qsize() > 0):
       msg = self.serverMsg.get(False)
@@ -133,6 +150,24 @@ class Game(PygameGame): #mimics game.py
       self.serverMsg.task_done()
   def redrawAll(self,screen):
       #draw everything as same color? 
+      if self.mode == 'GAMEOVER':
+        OVERCOLOR = (0,255,0)
+        score1=self.piecesDict['Player1'].beans
+        score2=self.piecesDict['Player2'].beans
+        screen.blit(Game.endScreen,(0,0))
+        a=Text("Game Over! Thanks for playing!",c.GAMEWIDTH//2,
+        c.GAMEHEIGHT//2,'Arial Black',OVERCOLOR,60)
+        a.draw(screen)
+        if score1 > score2: 
+          b=Text("The winner was Player1",c.GAMEWIDTH//2,
+          c.GAMEHEIGHT*3//4,'Arial Black',OVERCOLOR,60)
+        elif score2>score1: 
+          b=Text("The winner was Player2",c.GAMEWIDTH//2,
+          c.GAMEHEIGHT*3//4,'Arial Black',OVERCOLOR,60)
+        elif score1==score2: 
+          b=Text("Tie game",c.GAMEWIDTH//2,
+          c.GAMEHEIGHT*3//4,'Arial Black',OVERCOLOR,60)
+        b.draw(screen)
       if self.mode=='INTRO':
         self.screenGroup.draw(screen)
         for userScreen in self.screenGroup:
@@ -140,26 +175,33 @@ class Game(PygameGame): #mimics game.py
       if self.mode in Game.modeList(): 
         screen.blit(Game.cowBackground,(0,0))
         self.gameBoard.squareGroup.draw(screen)
-        self.PieceGroup.draw(screen)
+        if (self.piecesDict['Player1'].xgrid!=self.piecesDict['Player2'].xgrid) or \
+        (self.piecesDict['Player1'].ygrid != self.piecesDict['Player2'].ygrid):
+          #basically when the players are on the same square
+          self.PieceGroup.draw(screen)
+          for Piece in self.PieceGroup:
+            Piece.drawName(self,screen)
+        else: 
+          self.meGroup.draw(screen)
+          self.me.drawName(self,screen)
         self.diceGroup.draw(screen)
         self.screenGroup.draw(screen)
         for userScreen in self.screenGroup:
           userScreen.drawText(screen)
-        for Piece in self.PieceGroup:
-            Piece.drawName(self,screen)
         drawBeansAndCoffee(self,screen,0,0,'Player1')
-        drawBeansAndCoffee(self,screen,self.width-150,self.height//30,'Player2')
+        drawBeansAndCoffee(self,screen,self.width-120,0,'Player2')
         if self.movesLeft!=None:
-          Text('movesLeft: %d' %(self.movesLeft),
-          100,self.height//4,'Arial Bold',(0,0,0),40).draw(screen)
-          Text('Turns completed: %d' %(self.gonnaBeTurn-1),
-          100,self.height//4+60,'Arial Bold',(0,0,0),40).draw(screen)
+          Text('Moves Left %d' %(self.movesLeft),
+          120,self.height//4,c.NUMFONT,(255,0,0),c.PLAYSIZE).draw(screen)
+          Text('Turns Done %d' %(self.gonnaBeTurn-1),
+          120,self.height//4+150,c.NUMFONT,(255,0,0),c.PLAYSIZE).draw(screen)
       if self.mode=='LOBBY': 
           screen.blit(Game.startScreen,(0,0))
           inc = 0
           for playerID in self.namesDict:
-              Text('%s name: %s'%(playerID,self.namesDict[playerID]),self.width//3,self.height//10+inc,'Impact',
-              c.TEXTCOLOR,70).draw(screen)
+              namesText=self.myfont.render('%s name: %s' \
+              %(playerID,self.namesDict[playerID]),False,(128,255,0))
+              screen.blit(namesText,(self.width/10,self.height/10+inc))
               inc += self.width/5 
       if self.displayMessage:
         displayMessage(screen,self.width/2,self.height/2,self.message,self.width,self.height) 

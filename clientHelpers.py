@@ -1,9 +1,9 @@
 import pygame
 from Pieces import Piece
 from pygamegame import PygameGame
-from Square import Square 
+from Square import * 
 import random
-from Board import Board 
+from Board import * 
 from displayMessage import displayMessage
 from boopGame import boopGame
 from Dice import Dice 
@@ -19,7 +19,7 @@ def setUpGame(self):
     #uses the Board class 
     self.bgColor=c.BGCOLOR 
     self.mode='LOBBY'  #LOBBY, PLAY 
-    self.myfont=pygame.font.SysFont(c.TEXTFONT , c.PLAYSIZE)
+    self.myfont=pygame.font.SysFont(c.NUMFONT , c.PLAYSIZE)
     self.message = '' #for displayMessage
     self.turnHold=False 
     self.displayMessage=False 
@@ -43,7 +43,8 @@ def setUpGame(self):
     self.me= Piece("lonely",14,14,True) #last parameter says it's me 
     self.PieceGroup.add(self.me)
     self.diceGroup=pygame.sprite.Group()
-
+    self.meGroup=pygame.sprite.Group()
+    self.meGroup.add(self.me)
     self.screenGroup=pygame.sprite.Group()
 
         #for screens that stop the flow of the game
@@ -62,14 +63,23 @@ def nextTurn(self): #when one turn is over
             makeNewTurn=False 
             print('starting turn for: ',PID)
             self.turnPlayer=PID 
-            self.piecesDict[PID].myMove(self)
+            if PID == 'Player2': 
+                value = random.randint(0,41)
+                self.movesLeft=(value%6+1)              
+                self.screenGroup.add(diceScreen(1000,self,value))
+            else: 
+                self.piecesDict[PID].myMove(self)
             break
     if makeNewTurn:
         if self.gonnaBeTurn>self.turnLimit:
             self.mode='GAMEOVER'
+            pygame.mixer.music.load('audio/jingleBells.mp3')
+            pygame.mixer.music.play()
         else:
             self.gonnaBeTurn+=1
-            print('made new turn, turn is: ',self.gonnaBeTurn)
+            self.mode = c.GAMESEQ.pop()
+            self.screenGroup.add(minigameScreen(2500,self))
+            self.movesLeft=None
 def moveCheck(self,dt): 
     #check which player needs to move, if any 
     if self.movesLeft == None: #i.e. game just started 
@@ -77,7 +87,7 @@ def moveCheck(self,dt):
         nextTurn(self)
         return 
     if self.movesLeft == 0: 
-        self.piecesDict[self.turnPlayer].turnsDone+=1 
+        self.piecesDict[self.turnPlayer].turnsDone=self.gonnaBeTurn
         #signal that the previous player completed the turn
         nextTurn(self)
     else: 
@@ -88,19 +98,18 @@ def moveCheck(self,dt):
 def drawBeansAndCoffee(outerGame,screen,x,y,PID): 
     #draws the beans and coffee, duh
     piece=outerGame.piecesDict[PID]
-    nameFont=pygame.font.SysFont(c.TEXTFONT , c.PLAYSIZE)
+    nameFont=pygame.font.SysFont(c.NUMFONT , c.PLAYSIZE)
     namesText=nameFont.render('%s' \
-    %(outerGame.namesDict[PID]),False,c.TEXTCOLOR)
-    screen.blit(namesText,(x,y))
+    %(outerGame.namesDict[PID]),False,(255,0,0))
+    screen.blit(namesText,(x+30,y))
 
-    screen.blit(Piece.beanImage,(x,y+50))
+    screen.blit(Piece.beanImage,(x,y+30))
     namesText=nameFont.render('x %d' \
-        %(piece.beans),False,c.TEXTCOLOR)
+        %(piece.beans),False,(255,0,0))
     screen.blit(namesText,(x+60,y+50))
 
-    screen.blit(Piece.coffeeImage,(x,y+100))
+    screen.blit(Piece.coffeeImage,(x,y+80))
     namesText=nameFont.render('x %d' \
-    %(piece.coffee),False,c.TEXTCOLOR)
-    screen.blit(namesText,(x+60,y+100))
-
+    %(piece.coffee),False,(255,0,0) )
+    screen.blit(namesText,(x+60,y+110))
     

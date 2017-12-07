@@ -19,7 +19,7 @@ def setUpGame(self):
     #uses the Board class 
     self.bgColor=c.BGCOLOR
     self.mode='LOBBY'  #LOBBY, PLAY 
-    self.myfont=pygame.font.SysFont(c.TEXTFONT , c.PLAYSIZE)
+    self.myfont=pygame.font.SysFont(c.NUMFONT , c.PLAYSIZE)
     self.message = '' #for displayMessage
     self.turnHold=False 
     self.displayMessage=False 

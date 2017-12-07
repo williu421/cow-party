@@ -78,7 +78,6 @@ class OfflineGame(PygameGame): #mimics game.py
         self.mode = 'CUSTOMIZE'
     if self.mode == 'PLAY':
       if self.turnPlayer==self.me.PID:
-    #MAKE SURE THE DICE WORKS ACROSS MULTIPLE PLAYERS
         print('pressed key on my turn')
         if len(self.diceGroup.sprites())>0:
             #there's a die flying around 

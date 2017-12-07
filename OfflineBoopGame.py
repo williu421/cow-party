@@ -73,7 +73,7 @@ class OfflineBoopGame(PygameGame):
                 gameOverText=Text("Game Over! Your score was %d boops"\
                 %(self.boopCount),self.width//2,self.height//2,'Arial Bold',
                 (153,51,255),40)
-                self.screenGroup.add(TimedScreen(2000,self.outerGame,
+                self.screenGroup.add(TimedScreen(8000,self.outerGame,
                 (102,204,0),[gameOverText]))
                 self.outerGame.minigameScores[-1][self.outerGame.me.PID]=self.boopCount
         if self.mode=='GAMEOVER' and len(self.screenGroup)==0:
