@@ -41,7 +41,6 @@ class boopGame(PygameGame):
         self.doggoY=random.randint(0,self.height-self.cellHeight)
     def keyPressed(self,code,mod):
         if code == pygame.K_0:
-            print('quitting now')
             self.outerGame.mode='PLAY'
             self.playing=False
         if code == pygame.K_9: #for debugging 

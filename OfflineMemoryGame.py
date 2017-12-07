@@ -8,6 +8,7 @@ from pprint import pprint
 from TimedScreen import *
 import numpy as np
 import copy
+import constants as c
 pygame.init()
 pygame.font.init()
 pygame.display.set_mode((1,1), pygame.NOFRAME)
@@ -22,8 +23,8 @@ class OfflineMemoryGame(PygameGame):
         self.needUserInput=False
         self.bgColor = (102,204,0)
         self.isOuter=False
-        self.timeCounter=15000 #milliseconds 
-        self.mode='PLAY' #switch between intro and play 
+        self.timeCounter=10000 #milliseconds 
+        self.mode='INTRO' #switch between intro and play 
         self.ready=False
         self.otherReady=False
         self.screenGroup=pygame.sprite.Group()
@@ -41,12 +42,15 @@ class OfflineMemoryGame(PygameGame):
             return pygame.transform.scale(
             pygame.image.load(imagePath).convert_alpha(),
             (200, 200))
+        OfflineMemoryGame.background=pygame.transform.scale(
+            pygame.image.load('images/memoryGameBackground.png').convert_alpha(),
+            (c.GAMEWIDTH+30, c.GAMEHEIGHT+30))
         OfflineMemoryGame.cow1=imageLoad('images/cow1.png') #image from clip art 
         OfflineMemoryGame.milk=imageLoad('images/milk.png') #from clip art 
         OfflineMemoryGame.poop=imageLoad('images/poop.png')
         OfflineMemoryGame.grass=imageLoad('images/grass.png')
         OfflineMemoryGame.brownCow=imageLoad('images/brownCow.png')
-        OfflineMemoryGame.door=imageLoad('images/door.jpg')
+        OfflineMemoryGame.door=imageLoad('images/door.png')
     
     def initGrid(self): #get a random grid of images
         grid=((OfflineMemoryGame.cow1,OfflineMemoryGame.cow1,OfflineMemoryGame.milk),
@@ -92,7 +96,6 @@ class OfflineMemoryGame(PygameGame):
         return None 
     def keyPressed(self,code,mod):
         if code == pygame.K_0:
-            print('quitting now')
             self.outerGame.mode='PLAY'
             self.playing=False
         if code == pygame.K_9: #for debugging 
@@ -102,9 +105,9 @@ class OfflineMemoryGame(PygameGame):
                 self.ready=True
                 self.mode='PLAY'
     def mousePressed(self,x,y):
-        print('mousepressed at: ',x,y)
+        if self.mode == 'INTRO':
+            return 
         coords = self.mouseHelper(x,y,self.gameGrid)
-        print('coords returns', coords)
         if coords != None: 
             row,col=coords 
             if self.show == None: 
@@ -183,7 +186,10 @@ class OfflineMemoryGame(PygameGame):
             self.width//2,self.height//2,'Arial Bold',(0,0,0),40).draw(screen)
             Text("Match as many as you can before time is out!",
             self.width//2,self.height//2+40,'Arial Bold',(0,0,0),40).draw(screen)
+            Text("Press 'a' when you're ready!",
+            self.width//2,self.height//2+80,'Arial Bold',(0,0,0),40).draw(screen)
         if self.mode=='PLAY':
+            screen.blit(OfflineMemoryGame.background,(0,0))
             self.drawGrid(self.displayGrid,screen)
             Text("Time left: %d" %((self.timeCounter)//1000),
                 self.width//10,self.height//10,'Arial Bold',(153,51,255),40).draw(screen)

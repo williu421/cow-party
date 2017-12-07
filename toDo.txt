@@ -1,7 +1,8 @@
 help screen
     HAH??
     NANI?? 
-
+    changing beans for cups 
+    
 squares
     huh? 
     coffee bean for cup
@@ -9,18 +10,17 @@ squares
 
 more minigames 
     penalty for hitting the poop
-    intro to minigames
+    game after each turn
 
 UI/UX
-    remove white png backgrounds
-    move bean up a lil
-    intro- include each square
-    movesleft, turnsdone not over board
-    passing start message better 
-    game over screen text color change 
+    boopgame/memorygame intro screen 
+        new audio 
+    transition to minigame
+    unite offline and online versions 
+    intro screen is pretty jank (fk the cows)
     weird border problem 
     custom color schemes 
 
-
+debugging 
 
     

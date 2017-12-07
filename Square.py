@@ -78,19 +78,15 @@ class ForkSquare(Square):
         self.choice=None #1 or 2, depending on what the user chooses 
     def tap(self,piece,game,moves):
         if game.turnPlayer==game.me.PID: 
-            print('now landed on fork',self.nextOrd1,self.nextOrd2)
             self.outerGame.message=["you have reached a fork!", "press 'a' to go %s" %self.dir1,
             "press 'b' to go %s" %self.dir2]
             self.outerGame.isFork=True
             self.outerGame.displayMessage=True
         else: 
             try: 
-                print('got here at try block: 0', piece.PID)
                 assert(piece.PID==self.outerGame.bot.PID)
-                print('now here')
                 choice = random.randint(1,2)
                 self.choice=choice
-                print('bot chose: ', choice)
                 self.moveOn(self.outerGame.bot,self.outerGame)
             except:
                 print('%s landed on fork, waiting for their decision'%piece.PID)
@@ -118,7 +114,7 @@ class BlueSquare(Square):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,Square.blueSquare,outerGame,dic)
     def tap(self,piece,game,moves):
-        if moves==0:
+        if moves==0:  
             piece.beans+=1
             c.CHING.play()
 class RedSquare(Square): 

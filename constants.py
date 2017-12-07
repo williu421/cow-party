@@ -14,7 +14,6 @@ INTROFONT = 'Courier New Bold'
 BGCOLOR = (0,255,255)
 import pygame
 pygame.mixer.init()
-pygame.mixer.music.load('audio/main.mp3')
 BOINGSOUND=pygame.mixer.Sound('audio/boing.wav')
 BOXINGSOUND=pygame.mixer.Sound('audio/boxingBell.wav')
 BOXINGSOUND.set_volume(.4)

@@ -43,18 +43,14 @@ class Piece(GameObject):
         self.turnsDone = 0#the number of turns this guy has completed 
         self.movesLeft=0 #for moving around the board
     def myMove(self,game): 
-        #game.turnHold=True 
-        if self==game.me: 
-            print("that's me")
         game.diceGroup.add(Dice(game.width//2,game.height//2,self))
     def move(self, moves,game):
-        print('moving with: ',moves)
+        #print('moving with: ',moves)
         currSq=game.gameBoard.board[self.ygrid][self.xgrid]
         self.ygrid,self.xgrid = currSq.getNext()
         newSq=game.gameBoard.board[self.ygrid][self.xgrid]
         self.x=Square.margin+(self.xgrid+1/2)*Board.cellWidth
         self.y=Square.margin+(self.ygrid+1/2)*Board.cellHeight
-        print(self.ygrid,self.xgrid,newSq.ordinal)
         newSq.tap(self,game,moves-1) 
     def changePID(self, PID):
         self.PID = PID

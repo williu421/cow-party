@@ -28,13 +28,16 @@ class OfflineGame(PygameGame): #mimics game.py
     def imageLoad(path):
       return pygame.transform.scale(
             pygame.image.load(path).convert_alpha(),
-            (self.width, self.height))
+            (c.GAMEWIDTH+30, c.GAMEHEIGHT+30))
     OfflineGame.selectionScreen=imageLoad('images/selectionScreen.jpg')
     OfflineGame.startScreen=imageLoad('images/startScreen.jpg')
-    OfflineGame.marioMap=imageLoad('images/marioMap.jpg')
     OfflineGame.woodBackground=imageLoad('images/Background.jpg')
     OfflineGame.cowBackground=imageLoad('images/cowBackground.jpg')
     OfflineGame.endScreen=imageLoad('images/santa.jpg')
+    OfflineGame.cartoonBackground=imageLoad('images/cartoonBackground.jpg')
+    OfflineGame.blueLightBackground=imageLoad('images/blueLightBackground.jpg')
+    OfflineGame.customizeBackground=imageLoad('images/customizeBackground.jpg')
+    OfflineGame.abstractOrange=imageLoad('images/abstractOrange.png')
     setUpGame(self)
     self.mode = 'SELECTION' 
     ##REMINDER: uncomment below: 
@@ -72,9 +75,7 @@ class OfflineGame(PygameGame): #mimics game.py
         for piece in self.PieceGroup: 
           piece.xgrid = self.gameBoard.squareDict[0].xcoord
           piece.ygrid = self.gameBoard.squareDict[0].ycoord
-        self.mode = 'INTRO'
-        pygame.mixer.music.play()
-        self.screenGroup.add(introScreen(7000,self))
+        self.mode = 'CUSTOMIZE'
     if self.mode == 'PLAY':
       if self.turnPlayer==self.me.PID:
     #MAKE SURE THE DICE WORKS ACROSS MULTIPLE PLAYERS
@@ -134,16 +135,34 @@ class OfflineGame(PygameGame): #mimics game.py
         print('about to movecheck')
         moveCheck(self,dt)
   def mousePressed(self,x,y):
+      if self.mode == 'CUSTOMIZE': 
+        if 60 <= x and x<= 395 and 110<= y and y<= 270:
+          self.chosenBackground=OfflineGame.woodBackground
+        elif 410 <= x and x<= 410+335 and 110<= y and y<= 270:
+          self.chosenBackground = OfflineGame.blueLightBackground
+        elif 760 <= x and x<= 760+335 and 110<= y and y<= 270:
+          self.chosenBackground = OfflineGame.cartoonBackground
+        if 194<= x and x<=950 and 380<=y and y<=415: 
+          self.chosenSong='carey'
+        elif 351<=x and x<=785 and 455<=y and y<= 500: 
+          self.chosenSong='macdonald'
+        elif 370<=x and x<=752 and 530<=y and y<= 570: 
+          self.chosenSong='gorillaz'
+        if self.chosenBackground!= None and self.chosenSong!=None: 
+          if 482<= x and x<= 482+176 and 613<=y and y<= 613+69:
+            if self.chosenSong == 'gorillaz': 
+              pygame.mixer.music.load('audio/feelGoodInc.mp3')
+            elif self.chosenSong == 'carey': 
+              pygame.mixer.music.load('audio/carey.mp3')
+            elif self.chosenSong == 'macdonald': 
+              pygame.mixer.music.load('audio/macdonald.mp3') 
+            self.mode = 'PLAY'##REMINDER: MAKE THIS INTRO, uncomment below
+            #pygame.mixer.music.play()
+            #self.screenGroup.add(introScreen(8000,self))
       if self.mode == 'SELECTION': 
         if 60<= x and x<=395 and 210<=y and y<= 270:
-          '''self.mode ='INTRO'
-          self.screenGroup.add(introScreen(7000,self))
-          pygame.mixer.music.load('audio/main.mp3')
-          pygame.mixer.music.play() '''
-          self.mode = 'PLAY'#REMINDER: uncomment above and remove this line
-          
+          self.mode = 'CUSTOMIZE'
         elif 690<= x and x<= 1130 and 210<=y and y<= 270: 
-          print('making board')
           self.mode = 'MAKEBOARD'
           self.makeMode = BlueSquare
           self.gameBoard = CustomBoard(self.height,self.width,15,15,self) 
@@ -151,22 +170,75 @@ class OfflineGame(PygameGame): #mimics game.py
         makeBoardMouseHelper(self,x,y)
   def redrawAll(self,screen):
       #draw everything as same color?
+      if self.mode == 'CUSTOMIZE':
+        customizecolor=(58,222,85)
+        customizefont='Verdana Bold'
+        framecolor=(0,0,0)
+        def imageLoad(path):
+            return pygame.transform.scale(
+            pygame.image.load(path).convert_alpha(),
+            (325,150))
+        miniWood=imageLoad('images/Background.jpg')
+        miniBlue=imageLoad('images/blueLightBackground.jpg')
+        miniCartoon=imageLoad('images/cartoonBackground.jpg')
+        screen.blit(OfflineGame.abstractOrange,(0,0)) 
+        Text('Choose Background:',c.GAMEWIDTH//2,c.GAMEHEIGHT//10,customizefont,customizecolor,c.LARGEFONT).draw(screen)
+        pygame.draw.rect(screen,framecolor,(60,110,395-60,270-110),0)
+        pygame.draw.rect(screen,framecolor,(410,110,335,270-110),0)
+        pygame.draw.rect(screen,framecolor,(760,110,335,270-110),0)
+        screen.blit(miniWood,(65,115))
+        screen.blit(miniBlue,(415,115))
+        screen.blit(miniCartoon,(765,115))
+        if self.chosenBackground == OfflineGame.woodBackground:
+          pygame.draw.rect(screen,(0,255,0),(60,110,395-60,270-110),5)
+        elif self.chosenBackground == OfflineGame.blueLightBackground:
+          pygame.draw.rect(screen,(0,255,0),(410,110,335,270-110),5)
+        elif self.chosenBackground == OfflineGame.cartoonBackground:
+          pygame.draw.rect(screen,(0,255,0),(760,110,335,270-110),5)
+
+        Text('Choose Song:',c.GAMEWIDTH//2,330,customizefont,customizecolor,c.LARGEFONT).draw(screen)
+        b=Text("'All I want for Christmas is you', Mariah Carey",c.GAMEWIDTH//2,400,customizefont,(0,0,0),c.LARGEFONT)
+        if self.chosenSong!='carey':
+          pygame.draw.rect(screen,(15,167,172),(b.x-(b.size[0]/2),b.y-(b.size[1]/2),b.size[0],b.size[1]),0)
+        else: 
+          pygame.draw.rect(screen,(43,226,92),(b.x-(b.size[0]/2),b.y-(b.size[1]/2),b.size[0],b.size[1]),0)
+        b.draw(screen)
+        b=Text("'Old MacDonald had a farm",c.GAMEWIDTH//2,475,customizefont,(0,0,0),c.LARGEFONT)
+        if self.chosenSong!='macdonald':
+          pygame.draw.rect(screen,(15,167,172),(b.x-(b.size[0]/2),b.y-(b.size[1]/2),b.size[0],b.size[1]),0)
+        else: 
+          pygame.draw.rect(screen,(43,226,92),(b.x-(b.size[0]/2),b.y-(b.size[1]/2),b.size[0],b.size[1]),0)
+        b.draw(screen)
+        b=Text("'Feel Good Inc.', Gorillaz",c.GAMEWIDTH//2,550,customizefont,(0,0,0),c.LARGEFONT)
+        if self.chosenSong!='gorillaz':
+          pygame.draw.rect(screen,(15,167,172),(b.x-(b.size[0]/2),b.y-(b.size[1]/2),b.size[0],b.size[1]),0)
+        else: 
+          pygame.draw.rect(screen,(43,226,92),(b.x-(b.size[0]/2),b.y-(b.size[1]/2),b.size[0],b.size[1]),0)
+        b.draw(screen)
+
+        a=Text('PLAY',c.GAMEWIDTH//2,c.GAMEHEIGHT*9//10,customizefont,(0,0,0),2*c.LARGEFONT)
+        if self.chosenBackground==None or self.chosenSong==None:
+          pygame.draw.rect(screen,(15,167,172),(a.x-(a.size[0]/2),a.y-(a.size[1]/2),a.size[0],a.size[1]),0)
+        else: 
+          pygame.draw.rect(screen,(43,226,92),(a.x-(a.size[0]/2),a.y-(a.size[1]/2),a.size[0],a.size[1]),0)
+        a.draw(screen)
       if self.mode == 'GAMEOVER':
+        OVERCOLOR = (0,255,0)
         score1=self.piecesDict['Player1'].beans
         score2=self.piecesDict['Player2'].beans
         screen.blit(OfflineGame.endScreen,(0,0))
         a=Text("Game Over! Thanks for playing!",c.GAMEWIDTH//2,
-        c.GAMEHEIGHT//2,'Arial Black',c.TEXTCOLOR,60)
+        c.GAMEHEIGHT//2,'Arial Black',OVERCOLOR,60)
         a.draw(screen)
         if score1 > score2: 
           b=Text("The winner was Player1",c.GAMEWIDTH//2,
-          c.GAMEHEIGHT*3//4,'Arial Black',c.TEXTCOLOR,60)
+          c.GAMEHEIGHT*3//4,'Arial Black',OVERCOLOR,60)
         elif score2>score1: 
           b=Text("The winner was Player2",c.GAMEWIDTH//2,
-          c.GAMEHEIGHT*3//4,'Arial Black',c.TEXTCOLOR,60)
+          c.GAMEHEIGHT*3//4,'Arial Black',OVERCOLOR,60)
         elif score1==score2: 
           b=Text("Tie game",c.GAMEWIDTH//2,
-          c.GAMEHEIGHT*3//4,'Arial Black',c.TEXTCOLOR,60)
+          c.GAMEHEIGHT*3//4,'Arial Black',OVERCOLOR,60)
         b.draw(screen)
       if self.mode == 'MAKEBOARD':
         drawBlankGrid(self,screen)
@@ -182,7 +254,7 @@ class OfflineGame(PygameGame): #mimics game.py
         for userScreen in self.screenGroup:
           userScreen.drawText(screen)
       if self.mode in OfflineGame.modeList(): 
-        screen.blit(OfflineGame.woodBackground,(0,0))
+        screen.blit(self.chosenBackground,(0,0))
         self.gameBoard.squareGroup.draw(screen)
         if (self.piecesDict['Player1'].xgrid!=self.piecesDict['Player2'].xgrid) or \
         (self.piecesDict['Player1'].ygrid != self.piecesDict['Player2'].ygrid):
@@ -215,10 +287,5 @@ class OfflineGame(PygameGame): #mimics game.py
               inc += self.width/5 
       if self.displayMessage:
         displayMessage(screen,self.width/2,self.height/2,self.message,self.width,self.height) 
-
-
-
-
-
 mygame=OfflineGame(c.GAMEWIDTH,c.GAMEHEIGHT)
 mygame.run()

@@ -79,8 +79,6 @@ class Game(PygameGame): #mimics game.py
         self.displayMessage=False
     if self.mode == 'PLAY':
       if self.turnPlayer==self.me.PID:
-    #MAKE SURE THE DICE WORKS ACROSS MULTIPLE PLAYERS
-        print('pressed key on my turn')
         if len(self.diceGroup.sprites())>0:
             #there's a die flying around 
             dice=self.diceGroup.sprites()[0]

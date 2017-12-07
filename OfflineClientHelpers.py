@@ -4,7 +4,7 @@ from pygamegame import PygameGame
 from Square import * 
 import random
 from Board import * 
-from displayMessage import displayMessage
+from displayMessage import *
 from boopGame import boopGame
 from Dice import Dice 
 import socket
@@ -45,7 +45,8 @@ def setUpGame(self):
     self.PieceGroup.add(self.me)
     self.meGroup.add(self.me)
     self.diceGroup=pygame.sprite.Group()
-
+    self.chosenBackground=None
+    self.chosenSong=None 
     self.screenGroup=pygame.sprite.Group()
 
         #for screens that stop the flow of the game
@@ -88,7 +89,6 @@ def nextTurn(self): #when one turn is over
             self.turnPlayer=PID 
             if PID == 'Player2': 
                 value = random.randint(0,41)
-                print('bot rolled: ',value)
                 self.movesLeft=(value%6+1)              
                 self.screenGroup.add(diceScreen(1000,self,value))
             else: 
@@ -98,10 +98,17 @@ def nextTurn(self): #when one turn is over
         if self.gonnaBeTurn>self.turnLimit:
             self.mode='GAMEOVER'
             pygame.mixer.music.load('audio/jingleBells.mp3')
-            pygame.mixer.music.fadeout(300)
+            pygame.mixer.music.play()
         else:
             self.gonnaBeTurn+=1
+            print('incrementing gonnabeturn')
+            if self.gonnaBeTurn%2==0: 
+                self.mode='BOOPGAME'
+            else: 
+                self.mode = 'MEMORYGAME'##REMINDER: CHANGE once we have more games available 
             print('made new turn, turn is: ',self.gonnaBeTurn)
+            self.screenGroup.add(minigameScreen(2500,self))
+            self.movesLeft=None
 def moveCheck(self,dt): 
     #check which player needs to move, if any 
     if self.movesLeft == None: #i.e. game just started 
@@ -109,7 +116,8 @@ def moveCheck(self,dt):
         nextTurn(self)
         return 
     if self.movesLeft == 0: 
-        self.piecesDict[self.turnPlayer].turnsDone+=1 
+        self.piecesDict[self.turnPlayer].turnsDone=self.gonnaBeTurn
+        print('turnsdone for', self.turnPlayer, 'is now: ', self.piecesDict[self.turnPlayer].turnsDone)
         #signal that the previous player completed the turn
         nextTurn(self)
     else: 
