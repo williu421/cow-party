@@ -41,11 +41,9 @@ class OfflineGame(PygameGame): #mimics game.py
     OfflineGame.customizeBackground=imageLoad('images/customizeBackground.jpg')
     OfflineGame.abstractOrange=imageLoad('images/abstractOrange.png')
     setUpGame(self)
-    self.mode = 'SELECTION' 
-    ##REMINDER: uncomment below: 
-    #self.screenGroup.add(introScreen(12000,self)) 
+    self.mode = 'SELECTION'  
     self.me.PID= 'Player1'  
-    self.namesDict['Player1'] = 'bob' #input('please enter your name\n') REMINDER: UNCOMMENT THIS
+    self.namesDict['Player1'] = input('please enter your name\n') 
     self.piecesDict['Player1'] = self.me
     self.bot = Piece("Player2",14,14,False)
     self.piecesDict['Player2']  = self.bot 
@@ -61,7 +59,6 @@ class OfflineGame(PygameGame): #mimics game.py
         return
     if self.mode == 'MAKEBOARD': 
       if code == pygame.K_h:#help screen 
-            #REMINDER: copy this over to online client 
             self.message = ["When making the custom board, use 'B','R','M' to toggle",
                             "between blue, red, and minigame squares.",
                             "Use your mouse to place the squares IN THE ORDER YOU TO MOVE IN",
@@ -106,7 +103,6 @@ class OfflineGame(PygameGame): #mimics game.py
               fork.moveOn(self.me,self)
           msg='' #don't want to send message twice 
       if code == pygame.K_h:#help screen 
-            #REMINDER: copy this over to online client 
             self.message = ['Welcome to Cow Party! ',
                             "On your turn, press the spacebar to roll the die",
                             "Your piece does different things based on the square you land on",
@@ -164,9 +160,9 @@ class OfflineGame(PygameGame): #mimics game.py
               pygame.mixer.music.load('audio/carey.mp3')
             elif self.chosenSong == 'macdonald': 
               pygame.mixer.music.load('audio/macdonald.mp3') 
-            self.mode = 'PLAY'#REMINDER: CHANGE TO INTRO
-            #pygame.mixer.music.play(-1)
-            #self.screenGroup.add(introScreen(8000,self))
+            self.mode = 'INTRO'
+            pygame.mixer.music.play(-1) 
+            self.screenGroup.add(introScreen(8000,self))
       if self.mode == 'SELECTION': 
         if 60<= x and x<=395 and 210<=y and y<= 270:
           self.mode = 'CUSTOMIZE'

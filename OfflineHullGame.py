@@ -13,7 +13,6 @@ import math
 pygame.init()
 pygame.font.init()
 pygame.display.set_mode((1,1), pygame.NOFRAME)
-##REMINDER: make online version too
 abstractOrange=pygame.transform.scale(
             pygame.image.load('images/abstractOrange.png').convert_alpha(),
             (c.GAMEWIDTH+30, c.GAMEHEIGHT+30))
@@ -62,7 +61,7 @@ class OfflineHullGame(PygameGame):
         self.needUserInput=False
         self.bgColor = (102,204,0)
         self.isOuter=False
-        self.timeCounter=10000 #milliseconds 
+        self.timeCounter=15000 #milliseconds 
         self.mode='INTRO' #switch between intro and play 
         self.ready=False
         self.otherReady=False
@@ -149,10 +148,10 @@ class OfflineHullGame(PygameGame):
             self.timeCounter-=dt
             if self.timeCounter<=0:
                 self.mode='GAMEOVER'
-                gameOverText=Text("Game Over. You covered %d sheep with %d fencing"\
+                gameOverText=Text("Game Over, covered %d sheep with %d fencing"\
                 %(len(self.guardedSheep()),self.fenceLength()),self.width//2,self.height//2,c.NUMFONT,
                 (153,51,255),40)
-                self.screenGroup.add(TimedScreen(2000,self.outerGame,
+                self.screenGroup.add(TimedScreen(3000,self.outerGame,
                 (102,204,0),[gameOverText]))
                 try:
                     self.outerGame.minigameScores[-1][self.outerGame.me.PID]=len(self.guardedSheep())*1000/(self.fenceLength())

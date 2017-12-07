@@ -1,12 +1,5 @@
-help screen
-    HAH??
-    NANI?? 
-    changing beans for cups 
- 
-
 UI/UX
     unite offline and online versions 
 
-debugging 
 
     
