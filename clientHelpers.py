@@ -19,7 +19,7 @@ def setUpGame(self):
     #uses the Board class 
     self.bgColor=c.BGCOLOR 
     self.mode='LOBBY'  #LOBBY, PLAY 
-    self.myfont=pygame.font.SysFont(c.NUMFONT , c.PLAYSIZE)
+    self.myfont=pygame.font.SysFont('Arial Bold', 70)
     self.message = '' #for displayMessage
     self.turnHold=False 
     self.displayMessage=False 
@@ -63,12 +63,7 @@ def nextTurn(self): #when one turn is over
             makeNewTurn=False 
             print('starting turn for: ',PID)
             self.turnPlayer=PID 
-            if PID == 'Player2': 
-                value = random.randint(0,41)
-                self.movesLeft=(value%6+1)              
-                self.screenGroup.add(diceScreen(1000,self,value))
-            else: 
-                self.piecesDict[PID].myMove(self)
+            self.piecesDict[PID].myMove(self)
             break
     if makeNewTurn:
         if self.gonnaBeTurn>self.turnLimit:

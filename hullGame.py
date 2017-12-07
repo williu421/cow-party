@@ -8,6 +8,7 @@ from pprint import pprint
 from TimedScreen import *
 import numpy as np
 import copy
+import decimal
 import constants as c
 import math
 pygame.init()
@@ -51,6 +52,13 @@ def getTriples(l):
     return outSet
 def dist(p1,p2): #return distance from p1 to p2 
     return math.sqrt((p1[0]-p2[0])**2+(p1[1]-p2[1])**2)
+
+def roundHalfUp(d): #from 15-112 course notes 
+        # Round to nearest with ties going away from zero.
+        rounding = decimal.ROUND_HALF_UP
+        # See other rounding options here:
+        # https://docs.python.org/3/library/decimal.html#rounding-modes
+        return int(decimal.Decimal(d).to_integral_value(rounding=rounding))
 class hullGame(PygameGame): 
     def __init__(self, width, height, outerGame,serverMsg=None, server=None, fps=50, title="hullGame"):
         self.outerGame=outerGame
@@ -147,6 +155,7 @@ class hullGame(PygameGame):
         if len(self.pointGroup)<21: 
             self.pointList.append((x,y))
             self.updateHull()
+    
 
     def timerFired(self,dt):
         self.screenGroup.update(dt)
@@ -154,25 +163,26 @@ class hullGame(PygameGame):
             self.timeCounter-=dt
             if self.timeCounter<=0:
                 self.mode='GAMEOVER'
+                if self.fenceLength == 0:
+                    self.score=0
+                else: 
+                    self.score = roundHalfUp((len(self.guardedSheep())*1000/(self.fenceLength())))
                 gameOverText=Text("Game Over, covered %d sheep with %d fencing"\
                 %(len(self.guardedSheep()),self.fenceLength()),self.width//2,self.height//2,c.NUMFONT,
                 (153,51,255),40)
                 self.screenGroup.add(TimedScreen(3000,self.outerGame,
                 (102,204,0),[gameOverText]))
                 try:
-                    self.outerGame.minigameScores[-1][self.outerGame.me.PID]=len(self.guardedSheep())*1000/(self.fenceLength())
+                    self.outerGame.minigameScores[-1][self.outerGame.me.PID]=self.score
                 except:
                     self.outerGame.minigameScores[-1][self.outerGame.me.PID]=0
-                msg  = 'Score %f \n' %(len(self.guardedSheep())*1000/(self.fenceLength()))
+                msg  = 'Score %d \n' %(self.score)
                 print('sending: ',msg)
                 self.outerGame.server.send(msg.encode())
         if self.mode=='GAMEOVER' and len(self.screenGroup)==0:
             gameExitTextList=[]
             scoresDict=self.outerGame.minigameScores[-1]
             inc=0
-            botScore=random.randint(int(max(scoresDict['Player1']-3,0)),int(scoresDict['Player1'])+3)
-            print('botscore is: ', botScore)
-            scoresDict['Player2'] = botScore
             #DOESN'T WORK IF WE EXPAND TO MORE THAN TWO PLAYERS
             if scoresDict['Player1']==scoresDict['Player2']: #tie case
                 newText= Text("It's a tie! Both players had %d matches; no beans awarded"\

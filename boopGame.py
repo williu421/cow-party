@@ -115,9 +115,9 @@ class boopGame(PygameGame):
                     (153,51,255),gameExitTextList)
                     self.screenGroup.add(exitScreen) 
                     self.mode='FINISHED'
-            if self.mode=='FINISHED' and len(self.screenGroup)==0:
-                self.playing=False
-                self.outerGame.mode='PLAY'       
+        if self.mode=='FINISHED' and len(self.screenGroup)==0:
+            self.playing=False
+            self.outerGame.mode='PLAY'       
         keysDown=self.isKeyPressed
         while (self.serverMsg.qsize() > 0):
             msg = self.serverMsg.get(False)
@@ -137,7 +137,6 @@ class boopGame(PygameGame):
                 print("failed")
                 print(e)
             self.serverMsg.task_done()
-        
     def redrawAll(self,screen):
         screen.blit(abstractOrange,(0,0))
         if len(self.screenGroup)>0:

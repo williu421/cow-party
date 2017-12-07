@@ -15,8 +15,8 @@ def namesCheck(self,BACKLOG):
             flag = False
             break
     if flag: 
-        self.mode='INTRO'
-        self.screenGroup.add(introScreen(12000,self))
+        self.mode='PLAY'#REMINDER: uncomment below, change this line to intro
+        #self.screenGroup.add(introScreen(12000,self))
 def processMessage(self, msg,BACKLOG):
     print("received: ", msg, "\n")
     msg = msg.split()

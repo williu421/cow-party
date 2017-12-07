@@ -174,7 +174,7 @@ class memoryGame(PygameGame):
                     self.width//2,self.height//2-40+80*inc,'Arial Bold',(0,0,0),40)
                     gameExitTextList.append(newText)
                     inc+=1
-            if len(gameExitTextList)==1:
+            if len(gameExitTextList)>0:
                 print('exiting minigame')
                 exitScreen=TimedScreen(1500,self.outerGame,
                 (153,51,255),gameExitTextList)
@@ -218,7 +218,7 @@ class memoryGame(PygameGame):
             Text("Press 'a' when you're ready!",
             self.width//2,self.height//2+80,'Arial Bold',(0,0,0),40).draw(screen)
         if self.mode=='PLAY':
-            screen.blit(OfflineMemoryGame.background,(0,0))
+            screen.blit(memoryGame.background,(0,0))
             self.drawGrid(self.displayGrid,screen)
             Text("Time left: %d" %((self.timeCounter)//1000),
                 self.width//10,self.height//10,'Arial Bold',(153,51,255),40).draw(screen)

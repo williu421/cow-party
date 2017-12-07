@@ -17,11 +17,12 @@ CELLHEIGHT=GAMEHEIGHT//15
 SQUAREMARGIN = GAMEWIDTH*1/10 
 LARGEFONT = 50
 TURNLIMIT = 10
-IP='128.237.130.170'
+IP='128.237.190.83'
 INTROFONT = 'Courier New Bold'
 BGCOLOR = (0,255,255)
 GAMES = ['BOOPGAME','MEMORYGAME','HULLGAME']
 GAMESEQ=[random.choice(GAMES) for i in range(20)]
+
 import pygame
 pygame.mixer.init()
 BOINGSOUND=pygame.mixer.Sound('audio/boing.wav')
