@@ -102,10 +102,7 @@ def nextTurn(self): #when one turn is over
         else:
             self.gonnaBeTurn+=1
             print('incrementing gonnabeturn')
-            if self.gonnaBeTurn%2==0: 
-                self.mode='BOOPGAME'
-            else: 
-                self.mode = 'MEMORYGAME'##REMINDER: CHANGE once we have more games available 
+            self.mode = c.GAMESEQ.pop() 
             print('made new turn, turn is: ',self.gonnaBeTurn)
             self.screenGroup.add(minigameScreen(2500,self))
             self.movesLeft=None
@@ -128,7 +125,7 @@ def moveCheck(self,dt):
 def drawBeansAndCoffee(outerGame,screen,x,y,PID): 
     #draws the beans and coffee, duh
     piece=outerGame.piecesDict[PID]
-    nameFont=pygame.font.SysFont(c.TEXTFONT , c.PLAYSIZE)
+    nameFont=pygame.font.SysFont(c.NUMFONT , c.PLAYSIZE)
     namesText=nameFont.render('%s' \
     %(outerGame.namesDict[PID]),False,(255,0,0))
     screen.blit(namesText,(x+30,y))

@@ -28,8 +28,7 @@ class TimedScreen(pygame.sprite.Sprite):
             self.alpha+=(100/self.time)*(dt+20)
             self.image.set_alpha(self.alpha) 
         self.aliveTime+=dt
-        if self.aliveTime>=self.time:
-            print('killing screen')  
+        if self.aliveTime>=self.time: 
             self.kill()  
     def drawText(self,screen):
         if self.textList!=None:

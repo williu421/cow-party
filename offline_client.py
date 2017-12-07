@@ -14,6 +14,7 @@ from OfflineClientHelpers import *
 from TimedScreen import *
 from pprint import pprint 
 from OfflineMemoryGame import *
+from OfflineHullGame import *
 import constants as c
 pygame.font.init()
 
@@ -23,13 +24,14 @@ pygame.font.init()
 class OfflineGame(PygameGame): #mimics game.py
   @staticmethod
   def modeList():
-    return ['PLAY','BOOPGAME','MEMORYGAME']
+    return ['PLAY','BOOPGAME','MEMORYGAME','HULLGAME']
   def init(self):
     def imageLoad(path):
       return pygame.transform.scale(
             pygame.image.load(path).convert_alpha(),
             (c.GAMEWIDTH+30, c.GAMEHEIGHT+30))
     OfflineGame.selectionScreen=imageLoad('images/selectionScreen.jpg')
+    OfflineGame.redBackground=imageLoad('images/redBackground.png')
     OfflineGame.startScreen=imageLoad('images/startScreen.jpg')
     OfflineGame.woodBackground=imageLoad('images/Background.jpg')
     OfflineGame.cowBackground=imageLoad('images/cowBackground.jpg')
@@ -56,6 +58,7 @@ class OfflineGame(PygameGame): #mimics game.py
     if self.displayMessage:
       if code == pygame.K_h:
         self.displayMessage=False
+        return
     if self.mode == 'MAKEBOARD': 
       if code == pygame.K_h:#help screen 
             #REMINDER: copy this over to online client 
@@ -130,6 +133,11 @@ class OfflineGame(PygameGame): #mimics game.py
         self.currentMinigame=OfflineMemoryGame(1920*3//5,1200*3//5,self)
         self.minigameScores.append(dict())
         self.currentMinigame.run()
+      elif self.mode == 'HULLGAME' and len(self.screenGroup)==0:
+        print('testing OfflineHullGame')    
+        self.currentMinigame=OfflineHullGame(1920*3//5,1200*3//5,self)
+        self.minigameScores.append(dict())
+        self.currentMinigame.run()
       elif self.mode == 'PLAY' and\
       len(self.screenGroup)==0 and len(self.diceGroup)==0 and not self.isFork:
         print('about to movecheck')
@@ -156,8 +164,8 @@ class OfflineGame(PygameGame): #mimics game.py
               pygame.mixer.music.load('audio/carey.mp3')
             elif self.chosenSong == 'macdonald': 
               pygame.mixer.music.load('audio/macdonald.mp3') 
-            self.mode = 'PLAY'##REMINDER: MAKE THIS INTRO, uncomment below
-            #pygame.mixer.music.play()
+            self.mode = 'PLAY'#REMINDER: CHANGE TO INTRO
+            #pygame.mixer.music.play(-1)
             #self.screenGroup.add(introScreen(8000,self))
       if self.mode == 'SELECTION': 
         if 60<= x and x<=395 and 210<=y and y<= 270:
@@ -242,13 +250,14 @@ class OfflineGame(PygameGame): #mimics game.py
         b.draw(screen)
       if self.mode == 'MAKEBOARD':
         drawBlankGrid(self,screen)
-      if self.mode == 'SELECTION': 
-        screen.blit(OfflineGame.selectionScreen,(0,0))
-        Text('Welcome to the offline mode!',c.GAMEWIDTH//2,c.GAMEHEIGHT//8,c.TEXTFONT,c.TEXTCOLOR,c.LARGEFONT).draw(screen)
-        Text('PLAY VS AI',c.GAMEWIDTH//5,c.GAMEHEIGHT//3,c.TEXTFONT,c.TEXTCOLOR,c.LARGEFONT).draw(screen)
-        Text('CUSTOM BOARD',c.GAMEWIDTH*4//5,c.GAMEHEIGHT//3,c.TEXTFONT,c.TEXTCOLOR,c.LARGEFONT).draw(screen)
-        pygame.draw.rect(screen,c.TEXTCOLOR,(60,210,395-60,270-210),5)
-        pygame.draw.rect(screen,c.TEXTCOLOR,(690,210,1130-690,270-210),5)
+      if self.mode == 'SELECTION':
+        selectionFont=(30,85,181) 
+        screen.blit(OfflineGame.redBackground,(0,0))
+        Text('Welcome to the offline mode',c.GAMEWIDTH//2,c.GAMEHEIGHT//8,c.TEXTFONT,selectionFont,c.LARGEFONT).draw(screen)
+        Text('PLAY VS AI',c.GAMEWIDTH//5,c.GAMEHEIGHT//3,c.TEXTFONT,selectionFont,c.LARGEFONT).draw(screen)
+        Text('CUSTOM BOARD',c.GAMEWIDTH*4//5,c.GAMEHEIGHT//3,c.TEXTFONT,selectionFont,c.LARGEFONT).draw(screen)
+        pygame.draw.rect(screen,selectionFont,(50,200,395-50,270-200),5)
+        pygame.draw.rect(screen,selectionFont,(680,200,1130-680,270-200),5)
       if self.mode=='INTRO':
         self.screenGroup.draw(screen)
         for userScreen in self.screenGroup:
@@ -273,10 +282,10 @@ class OfflineGame(PygameGame): #mimics game.py
         drawBeansAndCoffee(self,screen,self.width-120,0,'Player2')
        # drawBeansAndCoffee(self,screen,self.width-150,self.height//30,'Player2')
         if self.movesLeft!=None:
-          Text('Moves Left: %d' %(self.movesLeft),
-          100,self.height//4,c.TEXTFONT,(255,0,0),c.PLAYSIZE).draw(screen)
-          Text('Turns Done: %d' %(self.gonnaBeTurn-1),
-          100,self.height//4+150,c.TEXTFONT,(255,0,0),c.PLAYSIZE).draw(screen)
+          Text('Moves Left %d' %(self.movesLeft),
+          120,self.height//4,c.NUMFONT,(255,0,0),c.PLAYSIZE).draw(screen)
+          Text('Turns Done %d' %(self.gonnaBeTurn-1),
+          120,self.height//4+150,c.NUMFONT,(255,0,0),c.PLAYSIZE).draw(screen)
       if self.mode=='LOBBY': 
           screen.blit(OfflineGame.startScreen,(0,0))
           inc = 0
@@ -287,5 +296,4 @@ class OfflineGame(PygameGame): #mimics game.py
               inc += self.width/5 
       if self.displayMessage:
         displayMessage(screen,self.width/2,self.height/2,self.message,self.width,self.height) 
-mygame=OfflineGame(c.GAMEWIDTH,c.GAMEHEIGHT)
-mygame.run()
+

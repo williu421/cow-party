@@ -12,7 +12,9 @@ import constants as c
 pygame.init()
 pygame.font.init()
 pygame.display.set_mode((1,1), pygame.NOFRAME)
-
+abstractOrange=pygame.transform.scale(
+            pygame.image.load('images/abstractOrange.png').convert_alpha(),
+            (c.GAMEWIDTH+30, c.GAMEHEIGHT+30))
 class OfflineMemoryGame(PygameGame): 
     def __init__(self, width, height, outerGame,serverMsg=None, server=None, fps=50, title="OfflineMemoryGame"):
         self.outerGame=outerGame
@@ -146,7 +148,7 @@ class OfflineMemoryGame(PygameGame):
             gameExitTextList=[]
             scoresDict=self.outerGame.minigameScores[-1]
             inc=0
-            botScore=random.randint(scoresDict['Player1']-3,scoresDict['Player1']+3)
+            botScore=random.randint(max(scoresDict['Player1']-3,0),scoresDict['Player1']+3)
             print('botscore is: ', botScore)
             scoresDict['Player2'] = botScore
             #DOESN'T WORK IF WE EXPAND TO MORE THAN TWO PLAYERS
@@ -175,6 +177,7 @@ class OfflineMemoryGame(PygameGame):
             self.playing=False
             self.outerGame.mode='PLAY'  
     def redrawAll(self,screen):
+        screen.blit(abstractOrange,(0,0))
         if len(self.screenGroup)>0:
             self.screenGroup.draw(screen)
             for userScreen in self.screenGroup:

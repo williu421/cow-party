@@ -14,7 +14,9 @@ pygame.init()
 pygame.font.init()
 pygame.display.set_mode((1,1), pygame.NOFRAME)
 ##REMINDER: make online version too
-
+abstractOrange=pygame.transform.scale(
+            pygame.image.load('images/abstractOrange.png').convert_alpha(),
+            (c.GAMEWIDTH+30, c.GAMEHEIGHT+30))
 class Point(pygame.sprite.Sprite):
     def __init__(self,x,y):
         pygame.sprite.Sprite.__init__(self)
@@ -70,7 +72,7 @@ class OfflineHullGame(PygameGame):
         self.pointList=[]
         self.hull=[]
         self.sheepList=[]
-        for _ in range(15):
+        for _ in range(18):
             x=random.randint(50,c.GAMEWIDTH-50)
             y=random.randint(50,c.GAMEHEIGHT-50)
             self.sheepList.append((x,y))
@@ -85,7 +87,7 @@ class OfflineHullGame(PygameGame):
         OfflineHullGame.dog = imageLoad('images/miniDog.png')
         OfflineHullGame.background=pygame.transform.scale(
             pygame.image.load('images/hullBackground.jpg').convert_alpha(),
-            (c.GAMEWIDTH,c.GAMEHEIGHT))
+            (c.GAMEWIDTH+50,c.GAMEHEIGHT+50))
     def fenceLength(self):
         d=0
         for i in range(0,len(self.hull)):
@@ -147,17 +149,20 @@ class OfflineHullGame(PygameGame):
             self.timeCounter-=dt
             if self.timeCounter<=0:
                 self.mode='GAMEOVER'
-                gameOverText=Text("Game Over! You covered %d sheep with %d fencing"\
-                %(len(self.guardedSheep()),self.fenceLength()),self.width//2,self.height//2,'Arial Bold',
+                gameOverText=Text("Game Over. You covered %d sheep with %d fencing"\
+                %(len(self.guardedSheep()),self.fenceLength()),self.width//2,self.height//2,c.NUMFONT,
                 (153,51,255),40)
-                self.screenGroup.add(TimedScreen(1000,self.outerGame,
+                self.screenGroup.add(TimedScreen(2000,self.outerGame,
                 (102,204,0),[gameOverText]))
-                #self.outerGame.minigameScores[-1][self.outerGame.me.PID]=self.matchCount
+                try:
+                    self.outerGame.minigameScores[-1][self.outerGame.me.PID]=len(self.guardedSheep())*1000/(self.fenceLength())
+                except:
+                    self.outerGame.minigameScores[-1][self.outerGame.me.PID]=0
         if self.mode=='GAMEOVER' and len(self.screenGroup)==0:
             gameExitTextList=[]
             scoresDict=self.outerGame.minigameScores[-1]
             inc=0
-            botScore=random.randint(scoresDict['Player1']-3,scoresDict['Player1']+3)
+            botScore=random.randint(int(max(scoresDict['Player1']-3,0)),int(scoresDict['Player1'])+3)
             print('botscore is: ', botScore)
             scoresDict['Player2'] = botScore
             #DOESN'T WORK IF WE EXPAND TO MORE THAN TWO PLAYERS
@@ -178,7 +183,7 @@ class OfflineHullGame(PygameGame):
                     inc+=1
             if len(gameExitTextList)!=0:
                 print('exiting minigame')
-                exitScreen=TimedScreen(1500,self.outerGame,
+                exitScreen=TimedScreen(2000,self.outerGame,
                 (153,51,255),gameExitTextList)
                 self.screenGroup.add(exitScreen) 
                 self.mode='FINISHED'
@@ -186,6 +191,8 @@ class OfflineHullGame(PygameGame):
             self.playing=False
             self.outerGame.mode='PLAY'  
     def redrawAll(self,screen):
+        if self.mode!='FINISHED':
+            screen.blit(abstractOrange,(0,0))
         if len(self.screenGroup)>0:
             self.screenGroup.draw(screen)
             for userScreen in self.screenGroup:
@@ -224,5 +231,3 @@ class OfflineHullGame(PygameGame):
                     self.width//10,self.height//10+30,'Arial Bold',(153,51,255),40).draw(screen)
             except:
                 pass
-a=OfflineHullGame(c.GAMEWIDTH,c.GAMEHEIGHT,None,None)
-a.run()

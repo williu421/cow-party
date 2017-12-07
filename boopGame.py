@@ -132,6 +132,7 @@ class boopGame(PygameGame):
             self.serverMsg.task_done()
         
     def redrawAll(self,screen):
+        screen.blit(OfflineGame.abstractOrange,(0,0))
         if len(self.screenGroup)>0:
             self.screenGroup.draw(screen)
             for userScreen in self.screenGroup:

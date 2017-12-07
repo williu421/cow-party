@@ -133,8 +133,10 @@ class GreenSquare(Square):
     boardWidth,outerGame):
         super().__init__(xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,Square.greenSquare,outerGame)
-    def land(self,piece,game):
-        pass  
+    def tap(self,piece,game,moves):
+        if moves == 0:
+            piece.beans+=random.randint(-2,2)
+            piece.beans=max(piece.beans,0) 
 class MiniGameSquare(Square):
     def __init__(self,xcoord,ycoord,ordinal,rowNum,colNum,boardHeight,\
     boardWidth,outerGame,dic=None):

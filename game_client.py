@@ -5,24 +5,26 @@
 # adapted again by William Liu 
 #############################
 ##outer framework from 112 class site  
-
-
 import socket
 import threading
 from queue import Queue #should be 'from Queue import Queue if python2.x 
 from processMessage import processMessage 
 import constants as c
-#hostAddress=input("enter the host's IP address: \n")
-#HOST = str(hostAddress) # put your IP address here if playing  on multiple computers
+import pygame
+from Pieces import Piece
+from pygamegame import PygameGame
+from Square import Square 
+import random
+from Board import Board 
+from displayMessage import *
+from boopGame import boopGame
+from Dice import Dice 
+from clientHelpers import *
+from TimedScreen import *
+from pprint import pprint 
+from memoryGame import memoryGame
+pygame.font.init()
 
-HOST=c.IP
-PORT = 50009
-BACKLOG=2
-#need to make sure host, port match the server 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-server.connect((HOST,PORT))
-print("connected to server")
 
 def handleServerMsg(server, serverMsg):
   server.setblocking(1)
@@ -40,20 +42,6 @@ def handleServerMsg(server, serverMsg):
 # events-example0.py from 15-112 website
 # Barebones timer, mouse, and keyboard events
 
-import pygame
-from Pieces import Piece
-from pygamegame import PygameGame
-from Square import Square 
-import random
-from Board import Board 
-from displayMessage import *
-from boopGame import boopGame
-from Dice import Dice 
-from clientHelpers import *
-from TimedScreen import *
-from pprint import pprint 
-from memoryGame import memoryGame
-pygame.font.init()
 ####################################
 # customize these functions
 ####################################
@@ -135,14 +123,14 @@ class Game(PygameGame): #mimics game.py
       len(self.screenGroup)==0 and len(self.diceGroup)==0 and not self.isFork:
         print('about to movecheck')
         moveCheck(self,dt)
-    while (serverMsg.qsize() > 0):
-      msg = serverMsg.get(False)
+    while (self.serverMsg.qsize() > 0):
+      msg = self.serverMsg.get(False)
       try:
-        processMessage(self,msg,BACKLOG)
+        processMessage(self,msg,c.BACKLOG)
       except Exception as e:
         print("failed")
         print(e)
-      serverMsg.task_done()
+      self.serverMsg.task_done()
   def redrawAll(self,screen):
       #draw everything as same color? 
       if self.mode=='INTRO':
@@ -178,9 +166,15 @@ class Game(PygameGame): #mimics game.py
 
 
 ##NOT TKINTER STUFF 
+'''
+#run(200, 200, serverMsg, server)
+HOST=c.IP
+PORT = 50009
+BACKLOG=2
+#need to make sure host, port match the server 
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.connect((HOST,PORT))
+print("connected to server")
 serverMsg = Queue(100)
 threading.Thread(target = handleServerMsg, args = (server, serverMsg)).start()
-
-#run(200, 200, serverMsg, server)
-
-Game(c.GAMEWIDTH,c.GAMEHEIGHT,serverMsg,server).run()
+Game(c.GAMEWIDTH,c.GAMEHEIGHT,serverMsg,server).run()'''

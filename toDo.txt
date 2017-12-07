@@ -2,24 +2,10 @@ help screen
     HAH??
     NANI?? 
     changing beans for cups 
-    
-squares
-    huh? 
-    coffee bean for cup
-    instructions on minigames
-
-more minigames 
-    penalty for hitting the poop
-    game after each turn
+ 
 
 UI/UX
-    boopgame/memorygame intro screen 
-        new audio 
-    transition to minigame
     unite offline and online versions 
-    intro screen is pretty jank (fk the cows)
-    weird border problem 
-    custom color schemes 
 
 debugging 
 

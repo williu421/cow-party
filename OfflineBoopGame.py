@@ -9,7 +9,10 @@ from TimedScreen import *
 import constants as c
 pygame.init()
 pygame.font.init()
-
+pygame.display.set_mode((1,1), pygame.NOFRAME)
+abstractOrange=pygame.transform.scale(
+            pygame.image.load('images/abstractOrange.png').convert_alpha(),
+            (c.GAMEWIDTH+30, c.GAMEHEIGHT+30))
 class OfflineBoopGame(PygameGame):
     def __init__(self, width, height, outerGame,serverMsg=None, server=None, fps=50, title="boopGame"):
         self.outerGame=outerGame
@@ -70,14 +73,14 @@ class OfflineBoopGame(PygameGame):
                 gameOverText=Text("Game Over! Your score was %d boops"\
                 %(self.boopCount),self.width//2,self.height//2,'Arial Bold',
                 (153,51,255),40)
-                self.screenGroup.add(TimedScreen(1000,self.outerGame,
+                self.screenGroup.add(TimedScreen(2000,self.outerGame,
                 (102,204,0),[gameOverText]))
                 self.outerGame.minigameScores[-1][self.outerGame.me.PID]=self.boopCount
         if self.mode=='GAMEOVER' and len(self.screenGroup)==0:
             gameExitTextList=[]
             scoresDict=self.outerGame.minigameScores[-1]
             inc=0
-            botScore=random.randint(scoresDict['Player1']-3,scoresDict['Player1']+3)
+            botScore=random.randint(max(scoresDict['Player1']-3,0),scoresDict['Player1']+3)
             print('botscore is: ', botScore)
             scoresDict['Player2'] = botScore
             #DOESN'T WORK IF WE EXPAND TO MORE THAN TWO PLAYERS
@@ -108,6 +111,7 @@ class OfflineBoopGame(PygameGame):
         keysDown=self.isKeyPressed
         
     def redrawAll(self,screen):
+        screen.blit(abstractOrange,(0,0))
         if len(self.screenGroup)>0:
             self.screenGroup.draw(screen)
             for userScreen in self.screenGroup:
@@ -128,5 +132,3 @@ class OfflineBoopGame(PygameGame):
                 self.width//10,self.height*3//10,'Arial Bold',(153,51,255),40).draw(screen)
                 Text("Time left: %d" %((self.timeCounter)//1000),
                 self.width//10,self.height//10,'Arial Bold',(153,51,255),40).draw(screen)
-
-            
